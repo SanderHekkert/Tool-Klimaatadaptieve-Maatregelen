@@ -4,148 +4,486 @@
     <meta charset="utf-8">
     <title>{{ $title }}</title>
     <style>
-        @page { margin: 22mm 18mm; }
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 10pt;
-            line-height: 1.35;
-            color: #111;
+        @page {
+            margin: 14mm 14mm 18mm;
         }
-        h1 {
-            font-size: 15pt;
-            margin: 0 0 4pt;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: DejaVu Sans, Helvetica, sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.42;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Filters = pagina 1; maatregelen starten altijd op een nieuwe pagina */
+        .pdf-page--measures {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ——— Hero ——— */
+        .hero-wrap {
+            width: 100%;
+            margin: 0 0 14pt;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .hero-wrap td {
+            background: #0f766e;
+            color: #ffffff;
+            padding: 14pt 16pt 12pt;
+            vertical-align: top;
+        }
+
+        .hero-kicker {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0.92;
+            margin: 0 0 5pt;
+        }
+
+        .hero-title {
+            font-size: 14.5pt;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin: 0 0 6pt;
+        }
+
+        .hero-meta {
+            font-size: 8.5pt;
+            opacity: 0.9;
+            margin: 0;
+            padding-top: 4pt;
+            border-top: 1px solid rgba(255, 255, 255, 0.28);
+        }
+
+        .hero-pill {
+            display: inline-block;
+            margin-top: 6pt;
+            padding: 3pt 8pt;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 3pt;
+        }
+
+        /* ——— Callout ——— */
+        .callout {
+            margin: 0 0 14pt;
+            padding: 9pt 11pt 9pt 12pt;
+            background: #f0fdfa;
+            border: 1px solid #99f6e4;
+            border-left: 3.5pt solid #14b8a6;
+            border-radius: 0 4pt 4pt 0;
+            font-size: 8.75pt;
+            color: #134e4a;
+            line-height: 1.45;
+        }
+
+        .callout strong {
+            color: #0f766e;
+        }
+
+        /* ——— Section ——— */
+        .sec {
+            margin: 0 0 12pt;
+        }
+
+        .sec-head {
+            margin: 0 0 8pt;
+            padding: 0 0 4pt;
+            border-bottom: 2pt solid #0f766e;
+        }
+
+        .sec-title {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .sec-sub {
+            font-size: 8pt;
+            color: #64748b;
+            margin: 2pt 0 0;
+            font-weight: 600;
+        }
+
+        /* ——— Filters ——— */
+        .filter-shell {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 4pt;
+            overflow: hidden;
+        }
+
+        .filter-shell tr:nth-child(odd) td {
+            background: #fafbfc;
+        }
+
+        .filter-shell tr:nth-child(even) td {
+            background: #ffffff;
+        }
+
+        .filter-shell td {
+            padding: 6pt 10pt;
+            border-bottom: 1px solid #eef2f7;
+            vertical-align: middle;
+        }
+
+        .filter-shell tr:last-child td {
+            border-bottom: none;
+        }
+
+        .filter-k {
+            width: 30%;
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+        }
+
+        .filter-v {
+            font-size: 9.25pt;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* ——— Alerts ——— */
+        .alerts {
+            margin: 0 0 12pt;
+        }
+
+        .alert {
+            padding: 7pt 9pt 7pt 10pt;
+            margin: 0 0 6pt;
+            font-size: 8.5pt;
+            line-height: 1.4;
+            border-radius: 3pt;
+            border: 1px solid #fcd34d;
+            background: #fffbeb;
+            color: #78350f;
+        }
+
+        .alert:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert strong {
+            color: #92400e;
+        }
+
+        /* ——— Empty ——— */
+        .empty-box {
+            text-align: center;
+            padding: 22pt 16pt;
+            border: 1px dashed #cbd5e1;
+            border-radius: 4pt;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 9.25pt;
+            line-height: 1.5;
+        }
+
+        .empty-box strong {
+            display: block;
+            color: #0f172a;
+            font-size: 10pt;
+            margin-bottom: 4pt;
+        }
+
+        /* ——— Measure cards ——— */
+        .mc {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0 0 10pt;
+            border: 1px solid #e2e8f0;
+            border-radius: 4pt;
+            overflow: hidden;
+        }
+
+        .mc:last-child {
+            margin-bottom: 0;
+        }
+
+        .mc-h {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8pt 11pt;
+            vertical-align: top;
+        }
+
+        .mc-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 3pt;
+            line-height: 1.25;
+        }
+
+        .mc-badge {
+            display: inline-block;
+            font-size: 6.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #b45309;
+            background: #fff7ed;
+            border: 1px solid #fdba74;
+            padding: 2pt 5pt;
+            border-radius: 2pt;
+            margin-top: 2pt;
+        }
+
+        .mc-body {
+            padding: 8pt 11pt 9pt;
+            vertical-align: top;
+            background: #ffffff;
+        }
+
+        .kv {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 6pt;
+        }
+
+        .kv td {
+            padding: 4pt 8pt 4pt 0;
+            vertical-align: top;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .kv tr:last-child td {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .kv-l {
+            width: 22%;
+            font-size: 7pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .kv-v {
+            font-size: 8.75pt;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .mc-block {
+            margin: 6pt 0 0;
+            padding: 6pt 8pt;
+            background: #f8fafc;
+            border-radius: 3pt;
+            border: 1px solid #e8eef4;
+            font-size: 8.25pt;
+            color: #475569;
+            line-height: 1.42;
+        }
+
+        .mc-block--water {
+            border-left: 2.5pt solid #2dd4bf;
+        }
+
+        .mc-block-label {
+            font-size: 6.75pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #0f766e;
+            margin: 0 0 3pt;
+        }
+
+        ul.warns {
+            margin: 4pt 0 0;
+            padding-left: 14pt;
+            font-size: 8pt;
+            color: #92400e;
+        }
+
+        ul.warns li {
+            margin: 0 0 2pt;
+        }
+
+        .mc-tech {
+            margin: 0;
+            padding: 7pt 11pt 8pt;
+            background: #fafafa;
+            border-top: 1px solid #e2e8f0;
+            font-size: 8pt;
+            color: #475569;
+            line-height: 1.45;
+            vertical-align: top;
+        }
+
+        .mc-tech strong {
+            color: #334155;
             font-weight: 700;
         }
-        .muted { color: #444; font-size: 9pt; margin: 0 0 14pt; }
-        .note {
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            padding: 8pt 10pt;
-            margin: 0 0 14pt;
-            font-size: 9pt;
+
+        .dash {
+            color: #cbd5e1;
         }
-        h2 {
-            font-size: 11pt;
-            margin: 16pt 0 6pt;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 3pt;
-        }
-        table.filters { width: 100%; border-collapse: collapse; margin: 0 0 4pt; }
-        table.filters td { padding: 4pt 6pt; border: 1px solid #ddd; vertical-align: top; }
-        table.filters td.k { width: 28%; font-weight: 700; background: #f9fafb; }
-        .alert {
-            border: 1px solid #f59e0b;
-            background: #fffbeb;
-            padding: 6pt 8pt;
-            margin: 0 0 10pt;
-            font-size: 9pt;
-        }
-        table.measures { width: 100%; border-collapse: collapse; margin-top: 6pt; }
-        table.measures th, table.measures td {
-            border: 1px solid #ddd;
-            padding: 5pt 6pt;
-            vertical-align: top;
-            text-align: left;
-        }
-        table.measures th { background: #f3f4f6; font-size: 9pt; }
-        .m-name { font-weight: 700; }
-        .small { font-size: 8.5pt; color: #333; }
-        ul.warns { margin: 4pt 0 0 16pt; padding: 0; font-size: 8.5pt; }
-        .empty { padding: 10pt; border: 1px dashed #ccc; text-align: center; color: #555; font-size: 9.5pt; }
-        .badge { font-size: 7.5pt; font-weight: 700; color: #92400e; }
     </style>
 </head>
 <body>
-    <h1>{{ $title }}</h1>
-    <p class="muted">Gegenereerd op {{ $generatedAt }} — {{ config('app.name') }}</p>
 
-    <div class="note">
-        Dit document bevat <strong>alleen maatregelen die aan de ingevulde filters voldoen</strong>.
-        Maatregelen die wegvallen staan hier <strong>niet</strong> in.
-    </div>
+<div class="pdf-page pdf-page--filters">
 
-    <h2>Huidige filters</h2>
-    <table class="filters">
-        @foreach ($filterChips as $chip)
-            <tr>
-                <td class="k">{{ e($chip['label']) }}</td>
-                <td>{{ e($chip['value']) }}</td>
-            </tr>
-        @endforeach
+    <table class="hero-wrap" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <p class="hero-kicker">{{ config('app.name') }} · Bijlage E</p>
+                <h1 class="hero-title">{{ $title }}</h1>
+                <p class="hero-meta">Gegenereerd op {{ $generatedAt }}</p>
+                <span class="hero-pill">Alleen voldoende maatregelen</span>
+            </td>
+        </tr>
     </table>
 
-    @if (!empty($meta['volume_m3']))
-        <div class="alert">
-            <strong>Te bergen volume:</strong>
-            {{ number_format((float) $meta['volume_m3'], 2, ',', '.') }} m³
+    <div class="callout">
+        Dit rapport toont <strong>uitsluitend maatregelen die aan alle actieve filters voldoen</strong>.
+        Maatregelen die in de tool als “wegvallen” worden getoond, worden in dit document bewust weggelaten.
+    </div>
+
+    <div class="sec">
+        <div class="sec-head">
+            <p class="sec-title">Invoer &amp; filters</p>
+            <p class="sec-sub">Zelfde parameters als in het live-overzicht</p>
         </div>
-    @endif
-
-    @if (!empty($meta['risicos']) && count($meta['risicos']) === 1 && $meta['risicos'][0] === 'overstromingsgevaar')
-        <div class="alert">
-            In Bijlage E zijn geen maatregelen die uitsluitend op “overstromingsgevaar” zijn gekoppeld.
-        </div>
-    @endif
-
-    @if (empty($meta['niveau_selected']))
-        <div class="alert">
-            Er is geen schaalniveau geselecteerd; er kunnen daarom geen passende maatregelen worden bepaald.
-        </div>
-    @endif
-
-    <h2>Passende maatregelen ({{ count($items) }})</h2>
-
-    @if (count($items) === 0)
-        <p class="empty">Er zijn geen maatregelen die aan alle filters voldoen. Pas de invoer links in de tool aan en download opnieuw.</p>
-    @else
-        <table class="measures">
-            <thead>
+        <table class="filter-shell" cellspacing="0" cellpadding="0">
+            @foreach ($filterChips as $chip)
                 <tr>
-                    <th style="width:22%">Maatregel</th>
-                    <th style="width:14%">Investering</th>
-                    <th style="width:14%">Niveau</th>
-                    <th style="width:18%">Effect</th>
-                    <th style="width:32%">Water / opmerkingen</th>
+                    <td class="filter-k">{{ e($chip['label']) }}</td>
+                    <td class="filter-v">{{ e($chip['value']) }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($items as $row)
+            @endforeach
+        </table>
+    </div>
+
+    @if (! empty($meta['volume_m3'])
+        || (! empty($meta['risicos']) && count($meta['risicos']) === 1 && ($meta['risicos'][0] ?? null) === 'overstromingsgevaar')
+        || empty($meta['niveau_selected']))
+        <div class="alerts">
+            @if (! empty($meta['volume_m3']))
+                <div class="alert">
+                    <strong>Te bergen volume</strong> —
+                    {{ number_format((float) $meta['volume_m3'], 2, ',', '.') }} m³ (verhard × norm).
+                </div>
+            @endif
+            @if (! empty($meta['risicos']) && count($meta['risicos']) === 1 && ($meta['risicos'][0] ?? null) === 'overstromingsgevaar')
+                <div class="alert">
+                    In Bijlage E zijn <strong>geen maatregelen</strong> die uitsluitend op “overstromingsgevaar” zijn gekoppeld.
+                </div>
+            @endif
+            @if (empty($meta['niveau_selected']))
+                <div class="alert">
+                    <strong>Geen schaalniveau</strong> — vink in de tool minimaal gebied en/of gebouw aan om betrouwbare resultaten te krijgen.
+                </div>
+            @endif
+        </div>
+    @endif
+
+</div>
+
+<div class="pdf-page pdf-page--measures">
+
+    <div class="sec">
+        <div class="sec-head">
+            <p class="sec-title">Passende maatregelen</p>
+            <p class="sec-sub">{{ count($items) }} van {{ $meta['total'] ?? count($items) }} maatregelen voldoen aan de filters</p>
+        </div>
+
+        @if (count($items) === 0)
+            <div class="empty-box">
+                <strong>Geen resultaten voor deze invoer</strong>
+                Er voldoen momenteel geen maatregelen aan alle filters. Pas de parameters in de tool aan en genereer opnieuw een PDF.
+            </div>
+        @else
+            @foreach ($items as $row)
+                <table class="mc" cellspacing="0" cellpadding="0">
                     <tr>
-                        <td>
-                            <div class="m-name">{{ e($row['naam']) }}</div>
-                            @if (!empty($row['bijlage_onvolledig']))
-                                <div class="badge">Bijlage E onvolledig</div>
-                            @endif
-                        </td>
-                        <td class="small">{{ e($row['investering_tekst']) }}</td>
-                        <td class="small">{{ e($row['niveau_label']) }}</td>
-                        <td class="small">{{ e($row['effect_tekst']) }}</td>
-                        <td class="small">
-                            @if (!empty($row['water']['toelichting']))
-                                <div>{{ e($row['water']['toelichting']) }}</div>
-                            @endif
-                            @if (!empty($row['warnings']))
-                                <ul class="warns">
-                                    @foreach ($row['warnings'] as $w)
-                                        <li>{{ e($w) }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                            @if (empty($row['water']['toelichting']) && empty($row['warnings']))
-                                —
+                        <td class="mc-h">
+                            <p class="mc-title">{{ e($row['naam']) }}</p>
+                            @if (! empty($row['bijlage_onvolledig']))
+                                <span class="mc-badge">Bijlage E onvolledig</span>
                             @endif
                         </td>
                     </tr>
-                    @if (!empty($row['technisch']))
+                    <tr>
+                        <td class="mc-body">
+                            <table class="kv" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="kv-l">Investering</td>
+                                    <td class="kv-v">{{ e($row['investering_tekst'] ?? '—') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-l">Niveau</td>
+                                    <td class="kv-v">{{ e($row['niveau_label'] ?? '—') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-l">Effect</td>
+                                    <td class="kv-v">{{ e($row['effect_tekst'] ?? '—') }}</td>
+                                </tr>
+                            </table>
+
+                            @if (! empty($row['water']['toelichting']))
+                                <div class="mc-block mc-block--water">
+                                    <p class="mc-block-label">Waterberging</p>
+                                    {{ e($row['water']['toelichting']) }}
+                                </div>
+                            @endif
+
+                            @if (! empty($row['warnings']))
+                                <div class="mc-block" style="border-left:2.5pt solid #f59e0b;">
+                                    <p class="mc-block-label" style="color:#b45309;">Let op</p>
+                                    <ul class="warns">
+                                        @foreach ($row['warnings'] as $w)
+                                            <li>{{ e($w) }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            @if (empty($row['water']['toelichting']) && empty($row['warnings']))
+                                <p class="dash" style="margin:0;font-size:8.5pt;">Geen extra water- of budgetopmerkingen.</p>
+                            @endif
+                        </td>
+                    </tr>
+                    @if (! empty($row['technisch']))
                         <tr>
-                            <td colspan="5" class="small" style="background:#fafafa;border-top:none;padding-top:3pt;">
-                                <strong>Technisch:</strong> {{ e($row['technisch']) }}
+                            <td class="mc-tech">
+                                <strong>Technisch</strong> — {{ e($row['technisch']) }}
                             </td>
                         </tr>
                     @endif
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+                </table>
+            @endforeach
+        @endif
+    </div>
+
+</div>
+
 </body>
 </html>

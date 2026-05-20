@@ -71,6 +71,129 @@ class MaatregelFilterService
     }
 
     /**
+     * Analyseert alle maatregelen: welke voldoen en welke vallen weg, met redenen per maatregel.
+     *
+     * @param  array<string, mixed>  $input
+     * @return array{
+     *     meta: array<string, mixed>,
+     *     items: list<array<string, mixed>>
+     * }
+     */
+    public function analyze(array $input): array
+    {
+        $measures = config('maatregelen.maatregelen', []);
+        $userGebied = ! empty($input['niveau_gebied']);
+        $userGebouw = ! empty($input['niveau_gebouw']);
+        $risicos = array_values(array_intersect(
+            array_keys(config('maatregelen.risico_opties', [])),
+            is_array($input['risicos'] ?? null) ? $input['risicos'] : []
+        ));
+        $budget = $input['budget'] ?? null;
+        $aantalStuks = $input['aantal_toepasbare_stuks'] ?? null;
+        $verhardM2 = $input['verhard_m2'] ?? null;
+        $norm = $input['bergingsnorm_m3_per_m2'] ?? null;
+        $beschikbaarGebied = $input['beschikbaar_gebied_m2'] ?? null;
+        $beschikbaarDak = $input['beschikbaar_dak_m2'] ?? null;
+
+        $volumeM3 = null;
+        if ($verhardM2 !== null && (float) $verhardM2 > 0 && $norm !== null && (float) $norm > 0) {
+            $volumeM3 = (float) $verhardM2 * (float) $norm;
+        }
+
+        $items = [];
+        $passCount = 0;
+        foreach ($measures as $m) {
+            $failures = [];
+            $warnings = [];
+
+            if (! $userGebied && ! $userGebouw) {
+                $failures[] = 'Selecteer minimaal één schaalniveau (gebied en/of gebouw).';
+            } elseif (! $this->matchesNiveau($m, $userGebied, $userGebouw)) {
+                $failures[] = 'Past niet bij het gekozen schaalniveau.';
+            }
+
+            if ($risicos !== []) {
+                $mr = $m['risicos'] ?? [];
+                if ($mr === []) {
+                    $failures[] = 'Geen klimaatrisico in Bijlage E; past niet op je risicofilter.';
+                } elseif (count(array_intersect($mr, $risicos)) === 0) {
+                    $failures[] = 'Sluit niet aan op de geselecteerde klimaatrisico’s.';
+                }
+            }
+
+            if ($budget !== null && $budget !== '') {
+                if (! $this->matchesBudget($m, (float) $budget, $aantalStuks ? (int) $aantalStuks : null, $warnings)) {
+                    $failures[] = 'Budget te laag voor de minimaal benodigde investering (per stuk/m²/project).';
+                }
+            }
+
+            $water = $this->waterberekening($m, $volumeM3);
+            if ((($water ?? [])['exclude'] ?? false) === true) {
+                $failures[] = 'Voldoet niet aan de waterbergingsvoorwaarden.';
+            }
+
+            if (! $this->matchesBeschikbaarGebied($m, $volumeM3, $verhardM2, $beschikbaarGebied, $water, $warnings)) {
+                $failures[] = 'Beschikbaar gebied is te klein (min. oppervlak, percentage t.o.v. verharding of benodigde bergings-m²).';
+            }
+
+            if (! $this->matchesBeschikbaarDak($m, $water, $beschikbaarDak, $warnings)) {
+                $failures[] = 'Beschikbaar dakoppervlak is te klein voor de benodigde retentie-m².';
+            }
+
+            $pass = $failures === [];
+            if ($pass) {
+                $passCount++;
+            }
+
+            $items[] = [
+                'id' => $m['id'],
+                'naam' => $m['naam'],
+                'pass' => $pass,
+                'failures' => $failures,
+                'bijlage_onvolledig' => ! empty($m['bijlage_onvolledig']),
+                'investering_tekst' => $m['investering_tekst'] ?? '',
+                'onderhoud_jaar' => $m['onderhoud_jaar'] ?? '',
+                'effect_tekst' => $m['effect_tekst'] ?? '',
+                'technisch' => $m['technisch'] ?? '',
+                'niveau_label' => $this->formatNiveausLabel($m['niveaus'] ?? []),
+                'water' => $pass ? $water : null,
+                'warnings' => $pass ? $warnings : [],
+            ];
+        }
+
+        return [
+            'meta' => [
+                'volume_m3' => $volumeM3,
+                'risicos' => $risicos,
+                'pass_count' => $passCount,
+                'fail_count' => count($measures) - $passCount,
+                'total' => count($measures),
+                'niveau_selected' => $userGebied || $userGebouw,
+            ],
+            'items' => $items,
+        ];
+    }
+
+    /**
+     * @param  list<string>  $niveaus
+     */
+    private function formatNiveausLabel(array $niveaus): string
+    {
+        $parts = [];
+        foreach ($niveaus as $n) {
+            if ($n === 'beide') {
+                $parts[] = 'Gebouw- en gebiedsniveau';
+            } elseif ($n === 'gebied') {
+                $parts[] = 'Gebiedsniveau';
+            } elseif ($n === 'gebouw') {
+                $parts[] = 'Gebouwniveau';
+            }
+        }
+
+        return $parts !== [] ? implode(', ', $parts) : '—';
+    }
+
+    /**
      * @param  array<string, mixed>  $m
      */
     private function matchesNiveau(array $m, bool $userGebied, bool $userGebouw): bool

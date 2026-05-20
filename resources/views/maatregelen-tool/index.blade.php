@@ -8,7 +8,6 @@
             <h1 class="mt-page-title">Overzicht klimaatadaptieve maatregelen</h1>
             <p class="mt-lead">
                 Links vul je de parameters in zoals in <strong>Bijlage E</strong>. Rechts zie je direct welke maatregelen <strong>voldoen</strong> en welke <strong>wegvallen</strong>, inclusief korte redenen.
-                De <a href="#legenda">legenda</a> staat onder het formulier en komt uit het Excel-tabblad <strong>Legenda</strong>.
             </p>
 
             <form
@@ -16,6 +15,7 @@
                 class="mt-card mt-form mt-form--compact"
                 onsubmit="return false;"
                 data-preview-url="{{ route('maatregelen.preview') }}"
+                data-pdf-url="{{ route('maatregelen.pdf') }}"
             >
                 @csrf
 
@@ -103,9 +103,12 @@
         <aside class="mt-split__col mt-split__col--results" aria-label="Live resultaat">
             <div class="mt-results-panel">
                 <div class="mt-results-panel__head">
-                    <h2 class="mt-results-panel__title">Live resultaat</h2>
-                    <p class="mt-results-panel__sub">Alle maatregelen uit Bijlage E — voldoen of wegvallen met reden.</p>
+                    <h2 class="mt-results-panel__title">Resultaat</h2>
+                    <p class="mt-results-panel__sub">Alle maatregelen uit Bijlage E. Voldoen of wegvallen met reden.</p>
                     <div id="mt-live-status" class="mt-live-status">Laden…</div>
+                    <div class="mt-results-panel__actions">
+                        <button type="button" id="mt-pdf-btn" class="mt-btn mt-btn--secondary mt-btn--small">Download als PDF</button>
+                    </div>
                 </div>
                 <div class="mt-results-panel__body">
                     <div id="mt-live-chips" class="mt-filter"></div>
@@ -119,5 +122,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=1" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=2" defer></script>
 @endpush

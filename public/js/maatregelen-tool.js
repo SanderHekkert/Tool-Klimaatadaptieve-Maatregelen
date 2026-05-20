@@ -6,6 +6,8 @@
         return;
     }
 
+    const pdfBtn = document.getElementById("mt-pdf-btn");
+
     const chipsEl = document.getElementById("mt-live-chips");
     const metaEl = document.getElementById("mt-live-meta");
     const passEl = document.getElementById("mt-live-pass");
@@ -226,6 +228,77 @@
 
     form.addEventListener("input", scheduleRefresh);
     form.addEventListener("change", scheduleRefresh);
+
+    function parseFilenameFromDisposition(header) {
+        if (!header || typeof header !== "string") {
+            return null;
+        }
+        const mStar = header.match(/filename\*=(?:UTF-8''|)([^;]+)/i);
+        if (mStar && mStar[1]) {
+            try {
+                return decodeURIComponent(mStar[1].trim().replace(/^"+|"+$/g, ""));
+            } catch (e) {
+                return mStar[1].trim().replace(/^"+|"+$/g, "");
+            }
+        }
+        const m = header.match(/filename="([^"]+)"/i);
+        if (m && m[1]) {
+            return m[1];
+        }
+        const m2 = header.match(/filename=([^;\s]+)/i);
+        return m2 && m2[1] ? m2[1].replace(/^"+|"+$/g, "") : null;
+    }
+
+    if (pdfBtn && form.dataset.pdfUrl) {
+        pdfBtn.addEventListener("click", async function () {
+            if (pdfBtn.disabled) {
+                return;
+            }
+            const token = document.querySelector('meta[name="csrf-token"]');
+            const headers = {
+                Accept: "application/pdf",
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (token) {
+                headers["X-CSRF-TOKEN"] = token.getAttribute("content");
+            }
+            const prevText = pdfBtn.textContent;
+            pdfBtn.disabled = true;
+            pdfBtn.classList.add("mt-btn--busy");
+            pdfBtn.textContent = "PDF wordt gemaakt…";
+            try {
+                const res = await fetch(form.dataset.pdfUrl, {
+                    method: "POST",
+                    body: new FormData(form),
+                    headers: headers,
+                });
+                if (!res.ok) {
+                    throw new Error("HTTP " + res.status);
+                }
+                const blob = await res.blob();
+                const cd = res.headers.get("Content-Disposition");
+                const name =
+                    parseFilenameFromDisposition(cd) || "maatregelen-bijlage-e.pdf";
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = name;
+                a.rel = "noopener";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(function () {
+                    URL.revokeObjectURL(url);
+                }, 2000);
+            } catch (e) {
+                window.alert("De PDF kon niet worden gedownload. Controleer je verbinding en probeer opnieuw.");
+            } finally {
+                pdfBtn.disabled = false;
+                pdfBtn.classList.remove("mt-btn--busy");
+                pdfBtn.textContent = prevText;
+            }
+        });
+    }
 
     refresh();
 })();

@@ -278,11 +278,32 @@ body.mt-body {
     width: 100%;
 }
 
+.mt-btn--small {
+    font-size: 0.8125rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 9px;
+}
+
 @media (min-width: 560px) {
     .mt-btn--block {
         width: auto;
         min-width: 220px;
     }
+}
+
+.mt-results-panel__actions {
+    margin-top: 0.65rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.mt-btn[disabled],
+.mt-btn.mt-btn--busy {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .mt-form-actions {

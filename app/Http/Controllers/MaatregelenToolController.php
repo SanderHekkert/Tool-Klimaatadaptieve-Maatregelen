@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Services\MaatregelFilterService;
 use App\Support\BijlageExcelLegendaReader;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class MaatregelenToolController extends Controller
 {
@@ -33,6 +35,32 @@ class MaatregelenToolController extends Controller
             'meta' => $analysis['meta'],
             'items' => $analysis['items'],
         ]);
+    }
+
+    public function downloadPdf(Request $request): Response
+    {
+        $input = $this->normalizePreviewInput($request);
+        $analysis = $this->filterService->analyze($input);
+        $passed = [];
+        foreach ($analysis['items'] as $item) {
+            if (! empty($item['pass'])) {
+                $passed[] = $item;
+            }
+        }
+
+        $generatedAt = now()->timezone(config('app.timezone', 'UTC'))->format('d-m-Y \o\m H:i');
+
+        $pdf = Pdf::loadView('pdf.maatregelen-rapport', [
+            'title' => 'Passende klimaatadaptieve maatregelen (Bijlage E)',
+            'generatedAt' => $generatedAt,
+            'filterChips' => $this->buildFilterChips($input),
+            'meta' => $analysis['meta'],
+            'items' => $passed,
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'maatregelen-bijlage-e-'.now()->format('Y-m-d-His').'.pdf';
+
+        return $pdf->download($filename);
     }
 
     private function normalizePreviewInput(Request $request): array

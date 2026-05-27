@@ -345,6 +345,16 @@
         .dash {
             color: #cbd5e1;
         }
+
+        .plan-box {
+            margin: 0 0 12pt;
+            border: 1px solid #d1fae5;
+            background: #ecfdf5;
+            border-radius: 4pt;
+            padding: 8pt 10pt;
+            font-size: 8.5pt;
+            color: #065f46;
+        }
     </style>
 </head>
 <body>
@@ -405,6 +415,24 @@
         </div>
     @endif
 
+    @if (!empty($planSummary['has_input']))
+        <div class="plan-box">
+            <strong>Totaal kosten (indicatie):</strong>
+            @if (abs((float) ($planSummary['total_cost_min'] ?? 0) - (float) ($planSummary['total_cost_max'] ?? 0)) < 0.01)
+                € {{ number_format((float) ($planSummary['total_cost_min'] ?? 0), 0, ',', '.') }}
+            @else
+                € {{ number_format((float) ($planSummary['total_cost_min'] ?? 0), 0, ',', '.') }}
+                –
+                € {{ number_format((float) ($planSummary['total_cost_max'] ?? 0), 0, ',', '.') }}
+            @endif
+            @if (!empty($planSummary['has_volume_target']))
+                <br>
+                <strong>Nog te bergen water (conservatief):</strong>
+                {{ number_format((float) ($planSummary['remaining_water_m3'] ?? 0), 2, ',', '.') }} m³
+            @endif
+        </div>
+    @endif
+
 </div>
 
 <div class="pdf-page pdf-page--measures">
@@ -446,7 +474,29 @@
                                     <td class="kv-l">Effect</td>
                                     <td class="kv-v">{{ e($row['effect_tekst'] ?? '—') }}</td>
                                 </tr>
+                                @if (!empty($row['plan_qty']))
+                                    <tr>
+                                        <td class="kv-l">Jouw invoer</td>
+                                        <td class="kv-v">
+                                            {{ number_format((float) $row['plan_qty'], 2, ',', '.') }}
+                                            {{ ($row['planner']['invoer_eenheid'] ?? null) === 'm2' ? 'm²' : 'stuks' }}
+                                        </td>
+                                    </tr>
+                                @endif
                             </table>
+
+                            @if (($row['plan_cost_min'] ?? null) !== null)
+                                <div class="mc-block">
+                                    <p class="mc-block-label">Kosten bij jouw invoer</p>
+                                    @if (abs((float) $row['plan_cost_min'] - (float) ($row['plan_cost_max'] ?? $row['plan_cost_min'])) < 0.01)
+                                        € {{ number_format((float) $row['plan_cost_min'], 0, ',', '.') }}
+                                    @else
+                                        € {{ number_format((float) $row['plan_cost_min'], 0, ',', '.') }}
+                                        –
+                                        € {{ number_format((float) ($row['plan_cost_max'] ?? 0), 0, ',', '.') }}
+                                    @endif
+                                </div>
+                            @endif
 
                             @if (! empty($row['water']['toelichting']))
                                 <div class="mc-block mc-block--water">

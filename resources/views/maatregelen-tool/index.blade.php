@@ -18,21 +18,12 @@
                 data-pdf-url="{{ route('maatregelen.pdf') }}"
             >
                 @csrf
-
-                <section class="mt-section">
-                    <h2 class="mt-section__title">Te besteden kosten (€)</h2>
-                    <div class="mt-grid mt-grid--2">
-                        <div>
-                            <label class="mt-label" for="budget">Te besteden kosten</label>
-                            <input class="mt-input" id="budget" name="budget" type="text" placeholder="bijv. 8000" autocomplete="off" inputmode="decimal">
-                            <p class="mt-hint">Vul je een bedrag in, dan moet de investering minimaal voor één eenheid haalbaar zijn (bij stuks eventueel aantal invullen).</p>
-                        </div>
-                        <div>
-                            <label class="mt-label" for="aantal_toepasbare_stuks">Aantal toepasbare stuks (optioneel)</label>
-                            <input class="mt-input" id="aantal_toepasbare_stuks" name="aantal_toepasbare_stuks" type="number" min="1" placeholder="bijv. 10" autocomplete="off">
-                        </div>
-                    </div>
-                </section>
+                <input type="hidden" name="overweeg_alle_maatregelen" value="{{ !empty($overweegAlleMaatregelen) ? '1' : '0' }}">
+                @if (empty($overweegAlleMaatregelen))
+                    @foreach ($geselecteerdeMaatregelIds as $maatregelId)
+                        <input type="hidden" name="maatregel_ids[]" value="{{ $maatregelId }}">
+                    @endforeach
+                @endif
 
                 <section class="mt-section">
                     <h2 class="mt-section__title">Schaalniveau</h2>
@@ -113,6 +104,7 @@
                 <div class="mt-results-panel__body">
                     <div id="mt-live-chips" class="mt-filter"></div>
                     <div id="mt-live-meta"></div>
+                    <div id="mt-live-plan"></div>
                     <div id="mt-live-pass"></div>
                     <div id="mt-live-fail"></div>
                 </div>
@@ -122,5 +114,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=2" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=5" defer></script>
 @endpush

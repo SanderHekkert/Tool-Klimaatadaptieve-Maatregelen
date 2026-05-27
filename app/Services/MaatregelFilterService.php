@@ -11,6 +11,9 @@ class MaatregelFilterService
     public function filter(array $input): array
     {
         $measures = config('maatregelen.maatregelen', []);
+        $overweegAlleMaatregelen = ! array_key_exists('overweeg_alle_maatregelen', $input)
+            || (bool) $input['overweeg_alle_maatregelen'];
+        $selectedIds = is_array($input['maatregel_ids'] ?? null) ? $input['maatregel_ids'] : [];
         $userGebied = ! empty($input['niveau_gebied']);
         $userGebouw = ! empty($input['niveau_gebouw']);
         $risicos = array_values(array_intersect(
@@ -31,6 +34,9 @@ class MaatregelFilterService
 
         $rows = [];
         foreach ($measures as $m) {
+            if (! $overweegAlleMaatregelen && ! in_array((string) ($m['id'] ?? ''), $selectedIds, true)) {
+                continue;
+            }
             $reasons = [];
             if (! $this->matchesNiveau($m, $userGebied, $userGebouw)) {
                 continue;
@@ -82,6 +88,9 @@ class MaatregelFilterService
     public function analyze(array $input): array
     {
         $measures = config('maatregelen.maatregelen', []);
+        $overweegAlleMaatregelen = ! array_key_exists('overweeg_alle_maatregelen', $input)
+            || (bool) $input['overweeg_alle_maatregelen'];
+        $selectedIds = is_array($input['maatregel_ids'] ?? null) ? $input['maatregel_ids'] : [];
         $userGebied = ! empty($input['niveau_gebied']);
         $userGebouw = ! empty($input['niveau_gebouw']);
         $risicos = array_values(array_intersect(
@@ -102,7 +111,12 @@ class MaatregelFilterService
 
         $items = [];
         $passCount = 0;
+        $consideredCount = 0;
         foreach ($measures as $m) {
+            if (! $overweegAlleMaatregelen && ! in_array((string) ($m['id'] ?? ''), $selectedIds, true)) {
+                continue;
+            }
+            $consideredCount++;
             $failures = [];
             $warnings = [];
 
@@ -158,6 +172,18 @@ class MaatregelFilterService
                 'niveau_label' => $this->formatNiveausLabel($m['niveaus'] ?? []),
                 'water' => $pass ? $water : null,
                 'warnings' => $pass ? $warnings : [],
+                'planner' => [
+                    'invoer_eenheid' => in_array($m['investering_eenheid'] ?? null, ['m2', 'stuk'], true) ? $m['investering_eenheid'] : null,
+                    'kosten_min_per_eenheid' => isset($m['investering_min']) ? (float) $m['investering_min'] : null,
+                    'kosten_max_per_eenheid' => isset($m['investering_max']) ? (float) $m['investering_max'] : null,
+                    'water_min_per_eenheid' => ($m['waterberging']['soort'] ?? null) === 'per_m2' || ($m['waterberging']['soort'] ?? null) === 'per_boom'
+                        ? (float) ($m['waterberging']['min_m3'] ?? 0)
+                        : null,
+                    'water_max_per_eenheid' => ($m['waterberging']['soort'] ?? null) === 'per_m2' || ($m['waterberging']['soort'] ?? null) === 'per_boom'
+                        ? (float) ($m['waterberging']['max_m3'] ?? 0)
+                        : null,
+                    'water_soort' => ($m['waterberging']['soort'] ?? null),
+                ],
             ];
         }
 
@@ -166,8 +192,8 @@ class MaatregelFilterService
                 'volume_m3' => $volumeM3,
                 'risicos' => $risicos,
                 'pass_count' => $passCount,
-                'fail_count' => count($measures) - $passCount,
-                'total' => count($measures),
+                'fail_count' => $consideredCount - $passCount,
+                'total' => $consideredCount,
                 'niveau_selected' => $userGebied || $userGebouw,
             ],
             'items' => $items,

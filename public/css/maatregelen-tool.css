@@ -1,5 +1,25 @@
 /* Maatregelen-tool — strak UI (Bijlage E) */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Bigelow+Rules&family=Bodoni+Moda+SC:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=DM+Serif+Display:ital@0;1&family=Risque&display=swap");
+
+@font-face {
+    font-family: "Recoleta";
+    src:
+        url("/fonts/Recoleta-Medium.woff2") format("woff2"),
+        url("/fonts/Recoleta-Medium.woff") format("woff");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Recoleta";
+    src:
+        url("/fonts/Recoleta-Bold.woff2") format("woff2"),
+        url("/fonts/Recoleta-Bold.woff") format("woff");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
 
 :root {
     --mt-bg: #eef2f6;
@@ -132,6 +152,10 @@ body.mt-body {
 
 .mt-main {
     padding: 1.75rem 1rem 3.5rem;
+}
+
+.mt-main--full-bleed {
+    padding: 0;
 }
 
 .mt-container {
@@ -500,43 +524,514 @@ body.mt-body {
     justify-content: flex-start;
 }
 
-.mt-btn--start {
-    min-width: 250px;
-    padding: 0.78rem 1.3rem;
-    border-radius: 10px;
-    font-size: 0.93rem;
+.mt-entry-page .mt-page-title {
+    margin-bottom: 0.5rem;
+}
+
+.mt-entry-page .mt-lead {
+    margin-bottom: 1.35rem;
+}
+
+.mt-entry-card {
+    border-color: #dbe4ef;
+    box-shadow: 0 6px 22px rgba(15, 23, 42, 0.07);
+}
+
+.mt-home-shell {
+    display: flex;
+    justify-content: center;
+    margin: 0.75rem auto 0;
+}
+
+.mt-home-fullscreen {
+    position: relative;
+    width: 100%;
+    min-height: 100dvh;
+    background: #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: clamp(0.8rem, 2vw, 1.4rem) 1rem;
+}
+
+.mt-home-fullscreen::before {
+    display: none;
+}
+
+.mt-home-fullscreen__overlay {
+    width: min(760px, calc(100vw - 2rem));
+    background: rgba(255, 255, 255, 0.66);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 18px;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22);
+    padding: clamp(1.1rem, 2.2vw, 1.8rem);
+    text-align: center;
+}
+
+.mt-home-cta--floating {
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.mt-home-stage {
+    position: relative;
+    width: min(940px, 100%);
+    min-height: min(88vh, 780px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.mt-home-content-wrap {
+    position: relative;
+    width: min(700px, calc(100vw - 2rem));
+    min-height: min(78vh, 700px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mt-home-orbit {
+    position: absolute;
+    width: min(980px, 108vw);
+    aspect-ratio: 1 / 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.mt-home-orbit__ring {
+    position: absolute;
+    inset: 8%;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.76);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+
+.mt-home-orbit__icon {
+    position: absolute;
+    width: clamp(44px, 6.2vw, 70px);
+    height: clamp(44px, 6.2vw, 70px);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+}
+
+.mt-home-orbit__icon i {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    color: #3bbd7a;
+}
+
+.mt-home-orbit__icon--top { top: 0; left: 50%; transform: translate(-50%, 0); }
+.mt-home-orbit__icon--tr { top: 12%; right: 8%; }
+.mt-home-orbit__icon--r { top: 50%; right: 0; transform: translate(0, -50%); }
+.mt-home-orbit__icon--br { bottom: 9%; right: 14%; }
+.mt-home-orbit__icon--bl { bottom: 9%; left: 14%; }
+.mt-home-orbit__icon--l { top: 50%; left: 0; transform: translate(0, -50%); }
+.mt-home-orbit__icon--tl { top: 12%; left: 8%; }
+
+.mt-home-content {
+    width: min(620px, calc(100vw - 2.4rem));
+    text-align: center;
+    padding: 0.35rem 0.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.mt-home-shell--full {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    margin: 0;
+    padding: clamp(1.2rem, 3vw, 2rem) 0.35rem clamp(2rem, 4vw, 3.3rem);
+}
+
+.mt-home-card {
+    width: min(980px, 100%);
+    text-align: center;
+    padding: clamp(1.5rem, 3.6vw, 2.8rem) clamp(1.1rem, 3.2vw, 2.7rem) clamp(1.75rem, 3.6vw, 3rem);
+    border-radius: 20px;
+    background:
+        radial-gradient(560px 260px at 50% -10%, rgba(16, 185, 129, 0.11), transparent 62%),
+        linear-gradient(180deg, #ffffff, #f9fcff);
+    border: 1px solid #dbe7f2;
+    box-shadow:
+        0 18px 44px rgba(15, 23, 42, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.85) inset;
+}
+
+.mt-home-shell--full .mt-home-card {
+    display: none;
+}
+
+.mt-home-logo {
+    margin: 0 0 1.1rem;
+    line-height: 1;
+}
+
+.mt-home-shell--full .mt-home-logo {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mt-home-logo__top {
+    display: block;
+    color: #3bbd7a;
+    font-size: clamp(2.4rem, 6.1vw, 4.6rem);
+    font-weight: 400;
+    letter-spacing: -0.002em;
+    text-transform: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.82);
+    font-family: "Recoleta", "Risque", "Cormorant Garamond", serif;
+    font-weight: 600;
+}
+
+.mt-home-logo__climate {
+    font-family: "Recoleta", "Risque", "Cormorant Garamond", serif;
     font-weight: 700;
-    letter-spacing: 0;
-    background: #0f766e;
-    border-color: #0f766e;
-    box-shadow: 0 4px 14px rgba(15, 118, 110, 0.2);
+    letter-spacing: 0.008em;
+}
+
+.mt-home-logo__bottom {
+    display: block;
+    margin-top: -0.08rem;
+    color: #101010;
+    font-size: clamp(1.95rem, 5.2vw, 3.8rem);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 0.9;
+    font-family: "Bodoni 72", "Bodoni MT", "Didot", "Bodoni Moda SC", serif;
+}
+
+.mt-home-copy {
+    max-width: 640px;
+    margin: 0 auto 0;
+    color: #1a1a1a;
+    font-size: clamp(1rem, 1.45vw, 1.18rem);
+    line-height: 1.48;
+    font-weight: 700;
+    font-family: "DM Serif Display", "Bodoni Moda SC", serif;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 1440px) {
+    .mt-home-stage {
+        min-height: min(84vh, 700px);
+    }
+
+    .mt-home-content-wrap {
+        width: min(620px, calc(100vw - 2rem));
+        min-height: min(72vh, 610px);
+    }
+
+    .mt-home-orbit {
+        width: min(860px, 98vw);
+    }
+
+    .mt-home-orbit__icon {
+        width: clamp(40px, 4.2vw, 58px);
+        height: clamp(40px, 4.2vw, 58px);
+    }
+
+    .mt-home-logo__top {
+        font-size: clamp(2rem, 4.8vw, 3.6rem);
+    }
+
+    .mt-home-logo__bottom {
+        font-size: clamp(1.55rem, 3.8vw, 2.7rem);
+    }
+
+    .mt-home-copy {
+        max-width: 520px;
+        font-size: clamp(0.9rem, 1.25vw, 1rem);
+    }
+}
+
+@media (max-width: 1280px) {
+    .mt-home-stage {
+        min-height: min(76vh, 580px);
+    }
+
+    .mt-home-content-wrap {
+        width: min(500px, calc(100vw - 1.4rem));
+        min-height: min(62vh, 500px);
+    }
+
+    .mt-home-orbit {
+        width: min(680px, 84vw);
+    }
+
+    .mt-home-orbit__icon {
+        width: clamp(36px, 3.2vw, 48px);
+        height: clamp(36px, 3.2vw, 48px);
+    }
+
+    .mt-home-orbit__icon i {
+        font-size: clamp(0.82rem, 1.3vw, 1.05rem);
+    }
+
+    .mt-home-logo__top {
+        font-size: clamp(1.72rem, 3.5vw, 2.55rem);
+    }
+
+    .mt-home-logo__bottom {
+        font-size: clamp(1.35rem, 2.7vw, 2rem);
+    }
+
+    .mt-home-copy {
+        max-width: 420px;
+        font-size: 0.84rem;
+        line-height: 1.34;
+    }
+
+    .mt-home-cta {
+        margin-top: 0.82rem;
+    }
+
+    .mt-btn--start {
+        min-width: 220px;
+        padding: 0.7rem 1.05rem;
+        font-size: 0.82rem;
+    }
+}
+
+.mt-home-shell--full .mt-home-copy {
+    max-width: 850px;
+}
+
+.mt-home-copy p {
+    margin: 0 0 0.95rem;
+}
+
+.mt-home-copy__intro {
+    font-size: 1.34em;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 0.65rem !important;
+}
+
+.mt-home-copy p:last-child {
+    margin-bottom: 0;
+}
+
+.mt-home-cta {
+    margin-top: 1.45rem;
+}
+
+.mt-home-highlights {
+    margin: 0.35rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    max-width: 900px;
+}
+
+.mt-home-shell--full .mt-home-highlights {
+    max-width: 980px;
+}
+
+.mt-home-highlight {
+    border: 1px solid #dce9f5;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border-radius: 12px;
+    padding: 0.78rem 0.85rem;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    text-align: left;
+}
+
+.mt-home-highlight h2 {
+    margin: 0 0 0.33rem;
+    font-size: 0.86rem;
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.mt-home-highlight p {
+    margin: 0;
+    font-size: 0.79rem;
+    line-height: 1.42;
+    color: #334155;
+}
+
+.mt-btn--start {
+    min-width: 260px;
+    padding: 0.88rem 1.45rem;
+    border-radius: 12px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.015em;
+    background: linear-gradient(180deg, #4bcc88 0%, #3bbd7a 100%);
+    border-color: #35af71;
+    box-shadow: 0 10px 24px rgba(59, 189, 122, 0.3);
     transition:
-        background-color 0.18s ease,
+        background 0.18s ease,
         border-color 0.18s ease,
         box-shadow 0.18s ease,
-        transform 0.12s ease;
+        transform 0.14s ease;
 }
 
 .mt-btn--start:hover {
-    background: #0d9488;
-    border-color: #0d9488;
+    background: linear-gradient(180deg, #5ad493 0%, #44c582 100%);
+    border-color: #3bbd7a;
     transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(13, 148, 136, 0.24);
+    box-shadow: 0 14px 28px rgba(59, 189, 122, 0.36);
 }
 
 .mt-btn--start:active {
     transform: translateY(0);
-    box-shadow: 0 3px 10px rgba(13, 148, 136, 0.2);
+    box-shadow: 0 7px 16px rgba(59, 189, 122, 0.26);
 }
 
 .mt-btn--start:focus-visible {
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.22);
+    box-shadow:
+        0 0 0 3px rgba(59, 189, 122, 0.32),
+        0 10px 24px rgba(59, 189, 122, 0.26);
+}
+
+.mt-home-cta-sub {
+    margin: 0.58rem 0 0;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
 }
 
 @media (max-width: 560px) {
+    .mt-home-fullscreen {
+        min-height: 100dvh;
+        padding: 0.5rem 0.75rem 1rem;
+    }
+
+    .mt-home-stage {
+        min-height: 94dvh;
+        justify-content: center;
+    }
+
+    .mt-home-content-wrap {
+        min-height: min(82vh, 620px);
+        width: calc(100vw - 1.2rem);
+    }
+
+    .mt-home-orbit {
+        width: min(860px, 138vw);
+        transform: translate(-50%, -50%);
+    }
+
+    .mt-home-card {
+        border-radius: 14px;
+        padding: 1.35rem 0.95rem 1.6rem;
+    }
+
+    .mt-home-logo {
+        margin-bottom: 1.2rem;
+    }
+
     .mt-btn--start {
         width: 100%;
         min-width: 0;
+    }
+}
+
+@media (max-width: 860px) {
+    .mt-home-orbit__icon--tr,
+    .mt-home-orbit__icon--tl {
+        top: 10%;
+    }
+
+    .mt-home-highlights {
+        grid-template-columns: 1fr;
+    }
+
+    .mt-home-highlight {
+        text-align: center;
+    }
+}
+
+@media (max-width: 1024px) {
+    .mt-main {
+        padding: 1.25rem 0.85rem 2.5rem;
+    }
+
+    .mt-home-content-wrap {
+        min-height: min(76vh, 640px);
+    }
+
+    .mt-home-orbit {
+        width: min(900px, 112vw);
+    }
+
+    .mt-home-copy {
+        max-width: 580px;
+        font-size: clamp(0.95rem, 2.2vw, 1.08rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .mt-main {
+        padding: 1rem 0.75rem 2rem;
+    }
+
+    .mt-home-stage {
+        min-height: 92dvh;
+    }
+
+    .mt-home-content-wrap {
+        width: calc(100vw - 1rem);
+        min-height: min(78vh, 620px);
+    }
+
+    .mt-home-orbit {
+        width: min(860px, 132vw);
+    }
+
+    .mt-home-orbit__icon {
+        width: clamp(42px, 10vw, 58px);
+        height: clamp(42px, 10vw, 58px);
+    }
+
+    .mt-home-copy {
+        max-width: 520px;
+        font-size: 0.98rem;
+        line-height: 1.42;
+    }
+
+    .mt-home-cta {
+        margin-top: 1.1rem;
+    }
+
+    .mt-results-panel {
+        min-height: 0;
+    }
+
+    .mt-results-panel__body {
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .mt-home-orbit {
+        width: min(760px, 158vw);
+    }
+
+    .mt-home-orbit__icon--tr,
+    .mt-home-orbit__icon--tl {
+        top: 12%;
+    }
+
+    .mt-home-copy {
+        font-size: 0.93rem;
     }
 }
 
@@ -1001,4 +1496,153 @@ body.mt-body {
     border-top: none;
     padding-top: 0.75rem;
     margin-top: 0.5rem;
+}
+
+/* Final hard laptop scale override */
+@media (max-width: 1440px) {
+    .mt-home-stage {
+        min-height: 74vh !important;
+    }
+
+    .mt-home-content-wrap {
+        width: min(530px, calc(100vw - 1.4rem)) !important;
+        min-height: 61vh !important;
+    }
+
+    .mt-home-orbit {
+        width: min(690px, 84vw) !important;
+    }
+
+    .mt-home-orbit__icon {
+        width: 43px !important;
+        height: 43px !important;
+    }
+
+    .mt-home-orbit__icon i {
+        font-size: 0.98rem !important;
+    }
+
+    .mt-home-logo__top {
+        font-size: clamp(1.7rem, 3.2vw, 2.55rem) !important;
+    }
+
+    .mt-home-logo__bottom {
+        font-size: clamp(1.3rem, 2.5vw, 1.95rem) !important;
+    }
+
+    .mt-home-copy {
+        max-width: 440px !important;
+        font-size: 0.86rem !important;
+        line-height: 1.34 !important;
+    }
+
+    .mt-home-cta {
+        margin-top: 0.8rem !important;
+    }
+
+    .mt-btn--start {
+        min-width: 220px !important;
+        padding: 0.68rem 1.05rem !important;
+        font-size: 0.83rem !important;
+    }
+}
+
+@media (max-width: 1366px) {
+    .mt-home-stage {
+        min-height: 68vh !important;
+    }
+
+    .mt-home-content-wrap {
+        width: min(460px, calc(100vw - 1rem)) !important;
+        min-height: 54vh !important;
+    }
+
+    .mt-home-orbit {
+        width: min(590px, 74vw) !important;
+    }
+}
+
+/* Final responsive lock for homepage */
+@media (max-width: 1024px) {
+    .mt-home-stage {
+        min-height: 92dvh;
+    }
+
+    .mt-home-content-wrap {
+        width: min(700px, calc(100vw - 1.5rem));
+        min-height: min(78vh, 640px);
+    }
+
+    .mt-home-orbit {
+        width: min(940px, 118vw);
+    }
+
+    .mt-home-copy {
+        max-width: 560px;
+        font-size: clamp(0.95rem, 1.9vw, 1.08rem);
+        line-height: 1.44;
+    }
+}
+
+@media (max-width: 768px) {
+    .mt-home-fullscreen {
+        padding: 0.5rem 0.75rem 1rem;
+    }
+
+    .mt-home-content-wrap {
+        width: calc(100vw - 1rem);
+        min-height: min(80vh, 620px);
+    }
+
+    .mt-home-orbit {
+        width: min(860px, 136vw);
+    }
+
+    .mt-home-orbit__icon {
+        width: clamp(40px, 10vw, 56px);
+        height: clamp(40px, 10vw, 56px);
+    }
+
+    .mt-home-logo__top {
+        font-size: clamp(2rem, 8.2vw, 3.35rem);
+    }
+
+    .mt-home-logo__bottom {
+        font-size: clamp(1.55rem, 6.5vw, 2.5rem);
+    }
+
+    .mt-home-copy {
+        max-width: 500px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .mt-home-stage {
+        min-height: 94dvh;
+    }
+
+    .mt-home-content-wrap {
+        min-height: min(84vh, 640px);
+    }
+
+    .mt-home-orbit {
+        width: min(760px, 158vw);
+    }
+
+    .mt-home-orbit__icon--tr,
+    .mt-home-orbit__icon--tl {
+        top: 11%;
+    }
+
+    .mt-home-copy {
+        max-width: 92vw;
+        font-size: 0.91rem;
+        line-height: 1.4;
+    }
+
+    .mt-btn--start {
+        width: 100%;
+        min-width: 0;
+    }
 }

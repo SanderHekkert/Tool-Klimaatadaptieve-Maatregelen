@@ -3,11 +3,11 @@
 @section('title', 'Start — maatregelen kiezen')
 
 @section('content')
-    <div class="mt-container" style="max-width:820px;">
+    <div class="mt-container mt-entry-page" style="max-width:820px;">
         <h1 class="mt-page-title">Wil je alle maatregelen overwegen?</h1>
         <p class="mt-lead">Zo nee, selecteer welke maatregelen je wel wilt meenemen. Daarna ga je door naar de tool.</p>
 
-        <form method="post" action="{{ route('maatregelen.start') }}" class="mt-card mt-form">
+        <form method="post" action="{{ route('maatregelen.start') }}" class="mt-card mt-form mt-entry-card">
             @csrf
 
             <section class="mt-section">

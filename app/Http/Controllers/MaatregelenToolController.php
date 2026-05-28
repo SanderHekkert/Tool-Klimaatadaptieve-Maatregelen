@@ -17,6 +17,11 @@ class MaatregelenToolController extends Controller
         private readonly BijlageExcelLegendaReader $legendaReader,
     ) {}
 
+    public function home(): View
+    {
+        return view('maatregelen-tool.home');
+    }
+
     public function index(): View
     {
         return view('maatregelen-tool.start', [

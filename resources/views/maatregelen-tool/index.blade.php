@@ -83,12 +83,8 @@
                     </div>
                 </section>
 
-                <div class="mt-form-actions">
-                    <p class="mt-hint" style="margin:0;">Het overzicht rechts werkt <strong>live</strong> mee bij elke wijziging.</p>
-                </div>
             </form>
 
-            @include('maatregelen-tool.partials.legenda')
         </div>
 
         <aside class="mt-split__col mt-split__col--results" aria-label="Live resultaat">

@@ -41,7 +41,7 @@
             chips
                 .map(function (c) {
                     return (
-                        "<li><span class=\"mt-filter__k\">" +
+                        '<li><span class="mt-filter__k">' +
                         h(c.label) +
                         "</span>" +
                         h(c.value) +
@@ -59,19 +59,28 @@
         const parts = [];
         if (meta.volume_m3 != null) {
             parts.push(
-                "<div class=\"mt-alert mt-alert--warn\" style=\"margin:0 0 0.75rem;\"><strong>Te bergen volume:</strong> " +
-                    h(Number(meta.volume_m3).toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })) +
-                    " m³</div>"
+                '<div class="mt-alert mt-alert--warn" style="margin:0 0 0.75rem;"><strong>Te bergen volume:</strong> ' +
+                    h(
+                        Number(meta.volume_m3).toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }),
+                    ) +
+                    " m³</div>",
             );
         }
-        if (Array.isArray(meta.risicos) && meta.risicos.length === 1 && meta.risicos[0] === "overstromingsgevaar") {
+        if (
+            Array.isArray(meta.risicos) &&
+            meta.risicos.length === 1 &&
+            meta.risicos[0] === "overstromingsgevaar"
+        ) {
             parts.push(
-                "<div class=\"mt-alert mt-alert--warn\" style=\"margin:0 0 0.75rem;\">In Bijlage E zijn geen maatregelen die uitsluitend op “overstromingsgevaar” zijn gekoppeld.</div>"
+                '<div class="mt-alert mt-alert--warn" style="margin:0 0 0.75rem;">In Bijlage E zijn geen maatregelen die uitsluitend op “overstromingsgevaar” zijn gekoppeld.</div>',
             );
         }
         if (!meta.niveau_selected) {
             parts.push(
-                "<div class=\"mt-alert mt-alert--warn\" style=\"margin:0;\">Vink minimaal één schaalniveau aan om maatregelen te kunnen filteren.</div>"
+                '<div class="mt-alert mt-alert--warn" style="margin:0;">Vink minimaal één schaalniveau aan om maatregelen te kunnen filteren.</div>',
             );
         }
         metaEl.innerHTML = parts.join("");
@@ -104,22 +113,45 @@
         const warn =
             i.warnings && i.warnings.length
                 ? '<ul class="mt-live-warns">' +
-                  i.warnings.map(function (w) {
-                      return "<li>" + h(w) + "</li>";
-                  }).join("") +
+                  i.warnings
+                      .map(function (w) {
+                          return "<li>" + h(w) + "</li>";
+                      })
+                      .join("") +
                   "</ul>"
                 : "";
-        const water = i.water && i.water.toelichting ? '<p class="mt-live-water">' + h(i.water.toelichting) + "</p>" : "";
-        const badge = i.bijlage_onvolledig ? '<span class="mt-badge">Bijlage E onvolledig</span>' : "";
+        const water =
+            i.water && i.water.toelichting
+                ? '<p class="mt-live-water">' + h(i.water.toelichting) + "</p>"
+                : "";
+        const badge = i.bijlage_onvolledig
+            ? '<span class="mt-badge">Bijlage E onvolledig</span>'
+            : "";
         const planner = i.planner || {};
-        const canInput = planner.invoer_eenheid === "m2" || planner.invoer_eenheid === "stuk";
+        const canInput =
+            planner.invoer_eenheid === "m2" ||
+            planner.invoer_eenheid === "stuk";
         const qty = Number(qtyById[i.id] || 0);
         const qtyInput = canInput
-            ? '<div class="mt-planner"><label class="mt-label" for="plan-' + h(i.id) + '">Hoeveel ' + (planner.invoer_eenheid === "m2" ? 'm²' : 'stuks') + ' wil je toepassen?</label><input class="mt-input mt-input--planner" id="plan-' + h(i.id) + '" data-plan-id="' + h(i.id) + '" type="number" min="0" step="0.1" value="' + h(qty || "") + '" placeholder="bijv. ' + (planner.invoer_eenheid === "m2" ? "25" : "3") + '"></div>'
+            ? '<div class="mt-planner"><label class="mt-label" for="plan-' +
+              h(i.id) +
+              '">Hoeveel ' +
+              (planner.invoer_eenheid === "m2" ? "m²" : "stuks") +
+              ' wil je toepassen?</label><input class="mt-input mt-input--planner" id="plan-' +
+              h(i.id) +
+              '" data-plan-id="' +
+              h(i.id) +
+              '" type="number" min="0" step="0.1" value="' +
+              h(qty || "") +
+              '" placeholder="bijv. ' +
+              (planner.invoer_eenheid === "m2" ? "25" : "3") +
+              '"></div>'
             : '<p class="mt-hint" style="margin-top:.5rem;">Voor deze maatregel is geen m²/stuks-invoer beschikbaar.</p>';
         const perMeasureCost = computeMeasureCost(i, qty);
         const costTxt = perMeasureCost
-            ? '<p class="mt-live-water"><strong>Kosten bij jouw invoer:</strong> ' + h(formatEuroRange(perMeasureCost.min, perMeasureCost.max)) + "</p>"
+            ? '<p class="mt-live-water"><strong>Kosten bij jouw invoer:</strong> ' +
+              h(formatEuroRange(perMeasureCost.min, perMeasureCost.max)) +
+              "</p>"
             : "";
         return (
             '<article class="mt-live-item mt-live-item--pass">' +
@@ -153,7 +185,10 @@
             return null;
         }
         const min = Number(p.kosten_min_per_eenheid) * qty;
-        const maxPerUnit = p.kosten_max_per_eenheid == null ? p.kosten_min_per_eenheid : p.kosten_max_per_eenheid;
+        const maxPerUnit =
+            p.kosten_max_per_eenheid == null
+                ? p.kosten_min_per_eenheid
+                : p.kosten_max_per_eenheid;
         const max = Number(maxPerUnit) * qty;
         return { min: min, max: max };
     }
@@ -164,7 +199,10 @@
             return null;
         }
         const min = Number(p.water_min_per_eenheid) * qty;
-        const maxPer = p.water_max_per_eenheid == null ? p.water_min_per_eenheid : p.water_max_per_eenheid;
+        const maxPer =
+            p.water_max_per_eenheid == null
+                ? p.water_min_per_eenheid
+                : p.water_max_per_eenheid;
         const max = Number(maxPer) * qty;
         return { min: min, max: max };
     }
@@ -204,14 +242,29 @@
         }
         const pieces = [];
         if (hasCost) {
-            pieces.push('<div class="mt-alert" style="margin:0 0 .6rem;"><strong>Totaal kosten (indicatie):</strong> ' + h(formatEuroRange(totalCostMin, totalCostMax)) + "</div>");
+            pieces.push(
+                '<div class="mt-alert" style="margin:0 0 .6rem;"><strong>Totaal kosten (indicatie):</strong> ' +
+                    h(formatEuroRange(totalCostMin, totalCostMax)) +
+                    "</div>",
+            );
         } else {
-            pieces.push('<div class="mt-alert" style="margin:0 0 .6rem;">Vul bij passende maatregelen m² of stuks in om kosten te berekenen.</div>');
+            pieces.push(
+                '<div class="mt-alert" style="margin:0 0 .6rem;">Vul bij passende maatregelen m² of stuks in om kosten te berekenen.</div>',
+            );
         }
         if (currentMeta && currentMeta.volume_m3 != null) {
             const target = Number(currentMeta.volume_m3 || 0);
             const remain = Math.max(0, target - totalWaterMin);
-            pieces.push('<div class="mt-alert mt-alert--warn" style="margin:0;"><strong>Nog te bergen water (conservatief):</strong> ' + h(remain.toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })) + " m³</div>");
+            pieces.push(
+                '<div class="mt-alert mt-alert--warn" style="margin:0;"><strong>Nog te bergen water (conservatief):</strong> ' +
+                    h(
+                        remain.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }),
+                    ) +
+                    " m³</div>",
+            );
         }
         planEl.innerHTML = pieces.join("");
     }
@@ -252,7 +305,7 @@
 
     function renderFailItem(i) {
         const reasons =
-            "<ul class=\"mt-fail-reasons\">" +
+            '<ul class="mt-fail-reasons">' +
             (i.failures || [])
                 .map(function (f) {
                     return "<li>" + h(f) + "</li>";
@@ -313,7 +366,9 @@
             }
             const data = await res.json();
             currentMeta = data.meta || {};
-            currentPassItems = (data.items || []).filter(function (i) { return i.pass; });
+            currentPassItems = (data.items || []).filter(function (i) {
+                return i.pass;
+            });
             renderChips(data.filter_chips || []);
             renderMeta(currentMeta);
             renderPass(data.items || []);
@@ -342,7 +397,9 @@
         const mStar = header.match(/filename\*=(?:UTF-8''|)([^;]+)/i);
         if (mStar && mStar[1]) {
             try {
-                return decodeURIComponent(mStar[1].trim().replace(/^"+|"+$/g, ""));
+                return decodeURIComponent(
+                    mStar[1].trim().replace(/^"+|"+$/g, ""),
+                );
             } catch (e) {
                 return mStar[1].trim().replace(/^"+|"+$/g, "");
             }
@@ -391,7 +448,8 @@
                 const blob = await res.blob();
                 const cd = res.headers.get("Content-Disposition");
                 const name =
-                    parseFilenameFromDisposition(cd) || "maatregelen-bijlage-e.pdf";
+                    parseFilenameFromDisposition(cd) ||
+                    "maatregelen-bijlage-e.pdf";
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
@@ -404,7 +462,9 @@
                     URL.revokeObjectURL(url);
                 }, 2000);
             } catch (e) {
-                window.alert("De PDF kon niet worden gedownload. Controleer je verbinding en probeer opnieuw.");
+                window.alert(
+                    "De PDF kon niet worden gedownload. Controleer je verbinding en probeer opnieuw.",
+                );
             } finally {
                 pdfBtn.disabled = false;
                 pdfBtn.classList.remove("mt-btn--busy");

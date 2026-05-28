@@ -279,7 +279,7 @@ return [
             'effect_tekst' => '2-5 keer verlenging thermisch comfort',
             'technisch' => '-',
             'waterberging' => null,
-        ],    
+        ],
         [
             'id' => 'hemelwater-afkoppelen',
             'naam' => 'Hemelwaterafvoer afkoppelen van riolering',

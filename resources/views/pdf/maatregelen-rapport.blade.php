@@ -433,13 +433,13 @@
     <div class="sec">
         <div class="sec-head">
             <p class="sec-title">Passende maatregelen</p>
-            <p class="sec-sub">{{ count($items) }} maatregel{{ count($items) === 1 ? '' : 'en' }} met ingevulde hoeveelheid</p>
+            <p class="sec-sub">{{ count($items) }} van {{ $meta['pass_count'] ?? count($items) }} passende maatregelen</p>
         </div>
 
         @if (count($items) === 0)
             <div class="empty-box">
-                <strong>Geen maatregelen in dit rapport</strong>
-                Vul bij passende maatregelen een hoeveelheid in m² of stuks in de tool in en genereer daarna opnieuw een PDF.
+                <strong>Geen passende maatregelen</strong>
+                Er voldoen momenteel geen maatregelen aan alle filters. Pas de parameters in de tool aan en genereer opnieuw een PDF.
             </div>
         @else
             @foreach ($items as $row)
@@ -509,8 +509,17 @@
                                 </div>
                             @endif
 
-                            @if (empty($row['plan_water_effect']['text']) && empty($row['warnings']) && ($row['plan_cost_min'] ?? null) === null)
-                                <p class="dash" style="margin:0;font-size:8.5pt;">Geen extra opmerkingen.</p>
+                            @if (! empty($row['water']['toelichting']))
+                                <div class="mc-block mc-block--water">
+                                    <p class="mc-block-label">Waterberging (indicatie)</p>
+                                    {{ e($row['water']['toelichting']) }}
+                                </div>
+                            @endif
+
+                            @if (empty($row['planner']['invoer_eenheid'] ?? null))
+                                <p class="dash" style="margin:0;font-size:8.5pt;">Geen m²/stuks-invoer voor deze maatregel.</p>
+                            @elseif (empty($row['plan_water_effect']['text']) && empty($row['warnings']) && ($row['plan_cost_min'] ?? null) === null && empty($row['water']['toelichting']))
+                                <p class="dash" style="margin:0;font-size:8.5pt;">Vul optioneel m² of stuks in de tool in voor kosten en waterberging bij jouw invoer.</p>
                             @endif
                         </td>
                     </tr>

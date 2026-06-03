@@ -1,58 +1,92 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Scriptie Julia — Klimaatadaptieve maatregelen (Bijlage E)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Webapplicatie om klimaatadaptieve maatregelen te verkennen, te filteren op basis van projectparameters en een selectie te exporteren als PDF. Gebaseerd op **Bijlage E**; uitgebreide toelichting verwijst naar de **Basisgids Klimaatadaptatie** (Van Wijnen).
 
-## About Laravel
+## Functies
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Startpagina met keuze: alle maatregelen of een eigen selectie
+- Tool met live filtering (schaalniveau, risico’s, oppervlakten, waterbergingsnorm in mm)
+- Resultaten: maatregelen die voldoen of wegvallen, met redenen
+- Planner: kosten en waterberging per ingevulde m²/stuks
+- PDF-export van alle passende maatregelen (optioneel met kosten/water bij ingevulde hoeveelheid)
+- Link naar de Basisgids-PDF
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Vereisten
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3+
+- Composer
+- Node.js 20+ (alleen voor Vite-assets, optioneel lokaal)
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Lokaal draaien
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install && npm run build   # optioneel
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Open `http://127.0.0.1:8000`.
 
-## Contributing
+### Routes
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| URL | Beschrijving |
+|-----|----------------|
+| `/` | Home / catalogus |
+| `/maatregelen/start` | Maatregelen kiezen |
+| `/maatregelen/tool` | Filtertool |
+| `/basisgids-klimaatadaptatie.pdf` | Basisgids (PDF) |
 
-## Code of Conduct
+Maatregeldata staat in `config/maatregelen.php`. Filterlogica in `app/Services/MaatregelFilterService.php`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Basisgids PDF
 
-## Security Vulnerabilities
+De Basisgids staat niet in de repository. Plaats het bestand lokaal bijvoorbeeld als:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `public/documents/basisgids-klimaatadaptatie.pdf`, of
+- `storage/app/documents/basisgids-klimaatadaptatie.pdf`
 
-## License
+Op een server met object storage (S3-compatibel) kun je in `.env` instellen:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+BASISGIDS_DISK=s3
+BASISGIDS_STORAGE_PATH=documents/basisgids-klimaatadaptatie.pdf
+```
+
+Uploaden kan met `php artisan basisgids:upload` (als de disk is geconfigureerd). Controleer of het bestand bereikbaar is met `php artisan basisgids:status`.
+
+Alternatief: een vaste publieke URL:
+
+```env
+BASISGIDS_PDF_URL=https://...
+```
+
+Zie `config/basisgids.php`.
+
+## Ontwikkeling
+
+```bash
+composer setup          # install + key + migrate + npm build
+composer dev              # serve, queue, logs, vite
+./vendor/bin/pint         # PHP code style
+npm run build             # frontend assets
+php artisan test
+```
+
+## Projectstructuur (kern)
+
+```
+app/Http/Controllers/MaatregelenToolController.php
+app/Services/MaatregelFilterService.php
+app/Support/BasisgidsStorage.php
+config/maatregelen.php
+resources/views/maatregelen-tool/
+public/css/maatregelen-tool.css
+public/js/maatregelen-tool.js
+```
+
+## Licentie
+
+MIT

@@ -179,35 +179,32 @@ class MaatregelenToolController extends Controller
             }
 
             $planner = is_array($item['planner'] ?? null) ? $item['planner'] : [];
-            if (empty($planner['invoer_eenheid'])) {
-                continue;
-            }
+            $canPlan = ! empty($planner['invoer_eenheid']);
+            $qty = $canPlan ? (float) ($planQty[$item['id'] ?? ''] ?? 0) : 0.0;
 
-            $qty = (float) ($planQty[$item['id'] ?? ''] ?? 0);
-            if ($qty <= 0) {
-                continue;
-            }
-
-            $hasPlanInput = true;
-            $item['plan_qty'] = $qty;
+            $item['plan_qty'] = $qty > 0 ? $qty : null;
             $item['plan_cost_min'] = null;
             $item['plan_cost_max'] = null;
             $item['plan_water_effect'] = null;
 
-            if (($planner['kosten_min_per_eenheid'] ?? null) !== null) {
-                $cMin = (float) $planner['kosten_min_per_eenheid'] * $qty;
-                $cMaxPer = (float) ($planner['kosten_max_per_eenheid'] ?? $planner['kosten_min_per_eenheid']);
-                $cMax = $cMaxPer * $qty;
-                $item['plan_cost_min'] = $cMin;
-                $item['plan_cost_max'] = $cMax;
-                $totalCostMin += $cMin;
-                $totalCostMax += $cMax;
-            }
+            if ($qty > 0) {
+                $hasPlanInput = true;
 
-            $planWater = $this->buildPlanWaterEffect($planner, $qty);
-            if ($planWater !== null) {
-                $item['plan_water_effect'] = $planWater;
-                $totalWaterMin += (float) $planWater['min_m3'];
+                if (($planner['kosten_min_per_eenheid'] ?? null) !== null) {
+                    $cMin = (float) $planner['kosten_min_per_eenheid'] * $qty;
+                    $cMaxPer = (float) ($planner['kosten_max_per_eenheid'] ?? $planner['kosten_min_per_eenheid']);
+                    $cMax = $cMaxPer * $qty;
+                    $item['plan_cost_min'] = $cMin;
+                    $item['plan_cost_max'] = $cMax;
+                    $totalCostMin += $cMin;
+                    $totalCostMax += $cMax;
+                }
+
+                $planWater = $this->buildPlanWaterEffect($planner, $qty);
+                if ($planWater !== null) {
+                    $item['plan_water_effect'] = $planWater;
+                    $totalWaterMin += (float) $planWater['min_m3'];
+                }
             }
 
             $passed[] = $item;

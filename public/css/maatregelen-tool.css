@@ -183,11 +183,18 @@ body.mt-body {
     color: var(--mt-text);
 }
 
-.mt-gids-intro {
+.mt-gids-intro-wrap {
+    width: 100%;
+    max-width: 100%;
     margin: 0 0 1.5rem;
+    box-sizing: border-box;
+}
+
+.mt-gids-intro {
+    margin: 0;
     padding: 0.9rem 1.1rem;
     width: 100%;
-    max-width: none;
+    max-width: 100%;
     box-sizing: border-box;
     font-size: 0.925rem;
     line-height: 1.55;

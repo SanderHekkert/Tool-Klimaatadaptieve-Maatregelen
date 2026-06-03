@@ -4,11 +4,13 @@
 @section('hide_header', '1')
 
 @section('content')
-    <p class="mt-gids-intro">
-        Deze tool bevat een selectie van maatregelen; voor een volledige toelichting op deze maatregelen en een uitgebreid overzicht van alle klimaatadaptieve maatregelen, zie de
-        <a href="{{ route('maatregelen.basisgids') }}" target="_blank" rel="noopener noreferrer">Basisgids Klimaatadaptatie van Van Wijnen</a>
-        <span class="mt-gids-intro__meta">(PDF)</span>.
-    </p>
+    <div class="mt-gids-intro-wrap">
+        <p class="mt-gids-intro">
+            Deze tool bevat een selectie van maatregelen; voor een volledige toelichting op deze maatregelen en een uitgebreid overzicht van alle klimaatadaptieve maatregelen, zie de
+            <a href="{{ route('maatregelen.basisgids') }}" target="_blank" rel="noopener noreferrer">Basisgids Klimaatadaptatie van Van Wijnen</a>
+            <span class="mt-gids-intro__meta">(PDF)</span>.
+        </p>
+    </div>
 
     <div class="mt-split">
         <div class="mt-split__col mt-split__col--form">

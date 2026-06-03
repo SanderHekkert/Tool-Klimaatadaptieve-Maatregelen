@@ -17,9 +17,20 @@ return [
 
     'external_url' => env('BASISGIDS_PDF_URL'),
 
+    /*
+    | Leeg laten = automatisch zoeken op FILESYSTEM_DISK, alle s3-disks en "s3".
+    | Bij Laravel Cloud: kijk in Environment welke disk-naam je bij de bucket koos.
+    */
     'disk' => env('BASISGIDS_DISK'),
 
     'storage_path' => env('BASISGIDS_STORAGE_PATH', 'documents/basisgids-klimaatadaptatie.pdf'),
+
+    'storage_paths' => [
+        'documents/basisgids-klimaatadaptatie.pdf',
+        'basisgids-klimaatadaptatie.pdf',
+        'documents/DUU- Basisgids klimaatadaptatie.pdf',
+        'DUU- Basisgids klimaatadaptatie.pdf',
+    ],
 
     'local_paths' => [
         storage_path('app/documents/basisgids-klimaatadaptatie.pdf'),

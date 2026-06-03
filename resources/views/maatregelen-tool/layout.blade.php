@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') — {{ config('app.name') }}</title>
-    <link rel="stylesheet" href="{{ asset('css/maatregelen-tool.css') }}?v=20">
+    <link rel="stylesheet" href="{{ asset('css/maatregelen-tool.css') }}?v=21">
     @stack('styles')
 </head>
 <body class="mt-body">

@@ -37,14 +37,9 @@ class MaatregelenToolController extends Controller
             return redirect()->away($externalUrl);
         }
 
-        $diskName = config('basisgids.disk');
-        $storagePath = config('basisgids.storage_path');
-
-        if (is_string($diskName) && $diskName !== '' && config("filesystems.disks.{$diskName}")) {
-            $disk = Storage::disk($diskName);
-            if ($disk->exists($storagePath)) {
-                return $disk->response($storagePath, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
-            }
+        $fromStorage = $this->basisgidsFromObjectStorage($headers);
+        if ($fromStorage !== null) {
+            return $fromStorage;
         }
 
         foreach (config('basisgids.local_paths', []) as $path) {
@@ -57,8 +52,66 @@ class MaatregelenToolController extends Controller
 
         abort(
             503,
-            'De Basisgids is op deze omgeving niet beschikbaar. Op Laravel Cloud: koppel Object Storage, upload de PDF, en zet BASISGIDS_DISK=s3 (of gebruik BASISGIDS_PDF_URL). Zie config/basisgids.php.',
+            'De Basisgids is niet gevonden in object storage. Controleer of het bestand in de bucket staat als documents/basisgids-klimaatadaptatie.pdf (of de oorspronkelijke bestandsnaam). Zet BASISGIDS_DISK op de disk-naam uit Laravel Cloud (vaak gelijk aan FILESYSTEM_DISK), of gebruik BASISGIDS_PDF_URL.',
         );
+    }
+
+    /**
+     * @param  array<string, string>  $headers
+     */
+    private function basisgidsFromObjectStorage(array $headers): ?BinaryFileResponse
+    {
+        $paths = array_values(array_unique(array_filter([
+            config('basisgids.storage_path'),
+            ...config('basisgids.storage_paths', []),
+        ], static fn (mixed $path): bool => is_string($path) && $path !== '')));
+
+        foreach ($this->basisgidsDiskCandidates() as $diskName) {
+            $disk = Storage::disk($diskName);
+
+            foreach ($paths as $path) {
+                try {
+                    if ($disk->exists($path)) {
+                        return $disk->response($path, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
+                    }
+                } catch (\Throwable) {
+                    continue;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function basisgidsDiskCandidates(): array
+    {
+        $candidates = [];
+
+        $explicit = config('basisgids.disk');
+        if (is_string($explicit) && $explicit !== '') {
+            $candidates[] = $explicit;
+        }
+
+        $default = config('filesystems.default');
+        if (is_string($default) && $default !== '') {
+            $candidates[] = $default;
+        }
+
+        $candidates[] = 's3';
+
+        foreach (config('filesystems.disks', []) as $name => $diskConfig) {
+            if (! is_string($name) || ! is_array($diskConfig)) {
+                continue;
+            }
+            if (($diskConfig['driver'] ?? null) === 's3') {
+                $candidates[] = $name;
+            }
+        }
+
+        return array_values(array_unique($candidates));
     }
 
     private function isReadablePdf(string $path): bool

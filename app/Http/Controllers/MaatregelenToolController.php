@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Services\MaatregelFilterService;
+use App\Support\BasisgidsStorage;
 use App\Support\BijlageExcelLegendaReader;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -71,76 +71,16 @@ class MaatregelenToolController extends Controller
      */
     private function basisgidsFromObjectStorage(array $headers): ?Response
     {
-        $paths = array_values(array_unique(array_filter([
-            config('basisgids.storage_path'),
-            ...config('basisgids.storage_paths', []),
-        ], static fn (mixed $path): bool => is_string($path) && $path !== '')));
-
-        foreach ($this->basisgidsDiskCandidates() as $diskName) {
-            if (! config("filesystems.disks.{$diskName}")) {
-                continue;
-            }
-
-            $disk = Storage::disk($diskName);
-
-            foreach ($paths as $path) {
-                try {
-                    if (! $disk->exists($path)) {
-                        continue;
-                    }
-
-                    // response() geeft StreamedResponse, geen BinaryFileResponse
-                    return $disk->response($path, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
-                } catch (Throwable) {
-                    continue;
+        foreach (BasisgidsStorage::diskCandidates() as $diskName) {
+            foreach (BasisgidsStorage::storagePaths() as $path) {
+                $response = BasisgidsStorage::responseFromDisk($diskName, $path, $headers);
+                if ($response !== null) {
+                    return $response;
                 }
             }
         }
 
         return null;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function basisgidsDiskCandidates(): array
-    {
-        $candidates = [];
-
-        $explicit = config('basisgids.disk');
-        if (is_string($explicit) && $explicit !== '') {
-            $candidates[] = $explicit;
-        }
-
-        $default = config('filesystems.default');
-        if (is_string($default) && $default !== '') {
-            $candidates[] = $default;
-        }
-
-        $cloudConfig = env('LARAVEL_CLOUD_DISK_CONFIG');
-        if (is_string($cloudConfig) && $cloudConfig !== '') {
-            $decoded = json_decode($cloudConfig, true);
-            if (is_array($decoded)) {
-                foreach ($decoded as $entry) {
-                    if (is_array($entry) && is_string($entry['disk'] ?? null) && $entry['disk'] !== '') {
-                        $candidates[] = $entry['disk'];
-                    }
-                }
-            }
-        }
-
-        $candidates[] = 's3';
-
-        foreach (config('filesystems.disks', []) as $name => $diskConfig) {
-            if (! is_string($name) || ! is_array($diskConfig)) {
-                continue;
-            }
-            if (($diskConfig['driver'] ?? null) === 's3') {
-                $candidates[] = $name;
-            }
-        }
-
-        return array_values(array_unique($candidates));
     }
 
     private function isReadablePdf(string $path): bool

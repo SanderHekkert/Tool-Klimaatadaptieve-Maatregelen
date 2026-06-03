@@ -57,7 +57,8 @@ class MaatregelFilterService
                 continue;
             }
 
-            if (! $this->matchesBeschikbaarDak($m, $water, $beschikbaarDak, $reasons)) {
+            $dakFailures = [];
+            if (! $this->matchesBeschikbaarDak($m, $water, $beschikbaarDak, $dakFailures, $reasons)) {
                 continue;
             }
 
@@ -434,8 +435,10 @@ class MaatregelFilterService
     }
 
     /**
+     * @param  array<string, mixed>  $m
      * @param  array<string, mixed>|null  $water
-     * @param  list<string>  $reasons
+     * @param  list<string>  $failures
+     * @param  list<string>  $warnings
      */
     private function matchesBeschikbaarDak(array $m, ?array $water, mixed $beschikbaarDak, array &$failures, array &$warnings): bool
     {

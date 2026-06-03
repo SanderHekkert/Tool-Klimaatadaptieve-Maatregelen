@@ -137,7 +137,7 @@
               '" placeholder="bijv. ' +
               (planner.invoer_eenheid === "m2" ? "25 m²" : "3 stuks") +
               '"></div>'
-            : '<p class="mt-hint" style="margin-top:.5rem;">Voor deze maatregel is geen m²/stuks-invoer beschikbaar.</p>';
+            : "";
         const perMeasureCost = computeMeasureCost(i, qty);
         const costTxt = perMeasureCost
             ? '<p class="mt-live-water"><strong>Kosten bij jouw invoer:</strong> ' +

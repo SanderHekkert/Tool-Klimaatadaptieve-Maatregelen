@@ -324,19 +324,21 @@ class MaatregelFilterService
             if ($eMin <= 0) {
                 return null;
             }
-            $m2Gunstig = $volumeM3 / $eMax;
-            $m2Ongunstig = $volumeM3 / $eMin;
+            $m2BijHoogEffect = $volumeM3 / $eMax;
+            $m2BijLaagEffect = $volumeM3 / $eMin;
 
             return [
                 'soort' => 'per_m2',
                 'volume_m3' => $volumeM3,
-                'm2_bij_meeste_effect' => round($m2Gunstig, 1),
-                'm2_bij_minste_effect' => round($m2Ongunstig, 1),
+                'm2_bij_meeste_effect' => round($m2BijHoogEffect, 1),
+                'm2_bij_minste_effect' => round($m2BijLaagEffect, 1),
+                'effect_max_m3_per_m2' => $eMax,
+                'effect_min_m3_per_m2' => $eMin,
                 'toelichting' => sprintf(
-                    'Benodigde oppervlakte (waterberging): ca. %s m² bij hoogste effect (%s m³/m²) tot ca. %s m² bij laagste effect (%s m³/m²).',
-                    number_format($m2Gunstig, 1, ',', '.'),
+                    'Benodigde oppervlakte (waterberging): ca. %s m² bij een hoog effect (%s m³/m²) tot ca. %s m² bij een lager effect (%s m³/m²).',
+                    number_format($m2BijHoogEffect, 1, ',', '.'),
                     number_format($eMax, 3, ',', '.'),
-                    number_format($m2Ongunstig, 1, ',', '.'),
+                    number_format($m2BijLaagEffect, 1, ',', '.'),
                     number_format($eMin, 3, ',', '.'),
                 ),
             ];
@@ -348,19 +350,19 @@ class MaatregelFilterService
             if ($eMin <= 0) {
                 return null;
             }
-            $bomenMin = (int) ceil($volumeM3 / $eMax);
-            $bomenMax = (int) ceil($volumeM3 / $eMin);
+            $bomenBijHoogEffect = (int) ceil($volumeM3 / $eMax);
+            $bomenBijLaagEffect = (int) ceil($volumeM3 / $eMin);
 
             return [
                 'soort' => 'per_boom',
                 'volume_m3' => $volumeM3,
-                'bomen_bij_meeste_effect' => $bomenMin,
-                'bomen_bij_minste_effect' => $bomenMax,
+                'bomen_bij_meeste_effect' => $bomenBijHoogEffect,
+                'bomen_bij_minste_effect' => $bomenBijLaagEffect,
                 'toelichting' => sprintf(
-                    'Benodigde aantal bomen (indicatief): minimaal %d bij %s m³/boom tot maximaal %d bij %s m³/boom.',
-                    $bomenMin,
+                    'Benodigde aantal bomen (indicatief): ca. %d bij een hoog effect (%s m³/boom) tot ca. %d bij een lager effect (%s m³/boom).',
+                    $bomenBijHoogEffect,
                     number_format($eMax, 2, ',', '.'),
-                    $bomenMax,
+                    $bomenBijLaagEffect,
                     number_format($eMin, 2, ',', '.'),
                 ),
             ];

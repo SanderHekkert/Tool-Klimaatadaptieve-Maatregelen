@@ -96,29 +96,43 @@ class MaatregelenToolController extends Controller
         $totalWaterMin = 0.0;
         $hasPlanInput = false;
         foreach ($analysis['items'] as $item) {
-            if (! empty($item['pass'])) {
-                $qty = (float) ($planQty[$item['id'] ?? ''] ?? 0);
-                $item['plan_qty'] = $qty;
-                $planner = is_array($item['planner'] ?? null) ? $item['planner'] : [];
-                $item['plan_cost_min'] = null;
-                $item['plan_cost_max'] = null;
-                if ($qty > 0) {
-                    $hasPlanInput = true;
-                    if (($planner['kosten_min_per_eenheid'] ?? null) !== null) {
-                        $cMin = (float) $planner['kosten_min_per_eenheid'] * $qty;
-                        $cMaxPer = (float) ($planner['kosten_max_per_eenheid'] ?? $planner['kosten_min_per_eenheid']);
-                        $cMax = $cMaxPer * $qty;
-                        $item['plan_cost_min'] = $cMin;
-                        $item['plan_cost_max'] = $cMax;
-                        $totalCostMin += $cMin;
-                        $totalCostMax += $cMax;
-                    }
-                    if (($planner['water_min_per_eenheid'] ?? null) !== null) {
-                        $totalWaterMin += (float) $planner['water_min_per_eenheid'] * $qty;
-                    }
-                }
-                $passed[] = $item;
+            if (empty($item['pass'])) {
+                continue;
             }
+
+            $planner = is_array($item['planner'] ?? null) ? $item['planner'] : [];
+            if (empty($planner['invoer_eenheid'])) {
+                continue;
+            }
+
+            $qty = (float) ($planQty[$item['id'] ?? ''] ?? 0);
+            if ($qty <= 0) {
+                continue;
+            }
+
+            $hasPlanInput = true;
+            $item['plan_qty'] = $qty;
+            $item['plan_cost_min'] = null;
+            $item['plan_cost_max'] = null;
+            $item['plan_water_effect'] = null;
+
+            if (($planner['kosten_min_per_eenheid'] ?? null) !== null) {
+                $cMin = (float) $planner['kosten_min_per_eenheid'] * $qty;
+                $cMaxPer = (float) ($planner['kosten_max_per_eenheid'] ?? $planner['kosten_min_per_eenheid']);
+                $cMax = $cMaxPer * $qty;
+                $item['plan_cost_min'] = $cMin;
+                $item['plan_cost_max'] = $cMax;
+                $totalCostMin += $cMin;
+                $totalCostMax += $cMax;
+            }
+
+            $planWater = $this->buildPlanWaterEffect($planner, $qty);
+            if ($planWater !== null) {
+                $item['plan_water_effect'] = $planWater;
+                $totalWaterMin += (float) $planWater['min_m3'];
+            }
+
+            $passed[] = $item;
         }
 
         $generatedAt = now()->timezone(config('app.timezone', 'UTC'))->format('d-m-Y \o\m H:i');
@@ -244,6 +258,54 @@ class MaatregelenToolController extends Controller
         }
 
         return number_format((float) $value, $decimals, ',', '.');
+    }
+
+    /**
+     * @param  array<string, mixed>  $planner
+     * @return array{min_m3: float, max_m3: float, text: string}|null
+     */
+    private function buildPlanWaterEffect(array $planner, float $qty): ?array
+    {
+        if ($qty <= 0 || ($planner['water_min_per_eenheid'] ?? null) === null) {
+            return null;
+        }
+
+        $effectMin = (float) $planner['water_min_per_eenheid'];
+        $effectMax = (float) ($planner['water_max_per_eenheid'] ?? $effectMin);
+        $waterMin = $effectMin * $qty;
+        $waterMax = $effectMax * $qty;
+
+        $invoerEenheid = ($planner['invoer_eenheid'] ?? null) === 'm2' ? 'm²' : 'stuks';
+        $effectEenheid = ($planner['water_soort'] ?? null) === 'per_boom' ? 'm³/boom' : 'm³/m²';
+        $qtyLabel = number_format($qty, 1, ',', '.');
+
+        if (abs($effectMax - $effectMin) < 0.000001) {
+            $text = sprintf(
+                '%s m³ (%s %s × %s %s)',
+                number_format($waterMin, 2, ',', '.'),
+                $qtyLabel,
+                $invoerEenheid,
+                number_format($effectMin, 3, ',', '.'),
+                $effectEenheid,
+            );
+        } else {
+            $text = sprintf(
+                '%s–%s m³ (%s %s × %s–%s %s)',
+                number_format($waterMin, 2, ',', '.'),
+                number_format($waterMax, 2, ',', '.'),
+                $qtyLabel,
+                $invoerEenheid,
+                number_format($effectMin, 3, ',', '.'),
+                number_format($effectMax, 3, ',', '.'),
+                $effectEenheid,
+            );
+        }
+
+        return [
+            'min_m3' => $waterMin,
+            'max_m3' => $waterMax,
+            'text' => $text,
+        ];
     }
 
     /**

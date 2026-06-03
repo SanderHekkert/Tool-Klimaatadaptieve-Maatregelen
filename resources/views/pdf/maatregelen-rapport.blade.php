@@ -433,13 +433,13 @@
     <div class="sec">
         <div class="sec-head">
             <p class="sec-title">Passende maatregelen</p>
-            <p class="sec-sub">{{ count($items) }} van {{ $meta['total'] ?? count($items) }} maatregelen voldoen aan de filters</p>
+            <p class="sec-sub">{{ count($items) }} maatregel{{ count($items) === 1 ? '' : 'en' }} met ingevulde hoeveelheid</p>
         </div>
 
         @if (count($items) === 0)
             <div class="empty-box">
-                <strong>Geen resultaten voor deze invoer</strong>
-                Er voldoen momenteel geen maatregelen aan alle filters. Pas de parameters in de tool aan en genereer opnieuw een PDF.
+                <strong>Geen maatregelen in dit rapport</strong>
+                Vul bij passende maatregelen een hoeveelheid in m² of stuks in de tool in en genereer daarna opnieuw een PDF.
             </div>
         @else
             @foreach ($items as $row)
@@ -491,10 +491,10 @@
                                 </div>
                             @endif
 
-                            @if (! empty($row['water']['toelichting']))
+                            @if (! empty($row['plan_water_effect']['text']))
                                 <div class="mc-block mc-block--water">
-                                    <p class="mc-block-label">Waterberging</p>
-                                    {{ e($row['water']['toelichting']) }}
+                                    <p class="mc-block-label">Waterbergingseffect bij jouw invoer</p>
+                                    {{ e($row['plan_water_effect']['text']) }}
                                 </div>
                             @endif
 
@@ -509,8 +509,8 @@
                                 </div>
                             @endif
 
-                            @if (empty($row['water']['toelichting']) && empty($row['warnings']))
-                                <p class="dash" style="margin:0;font-size:8.5pt;">Geen extra water- of budgetopmerkingen.</p>
+                            @if (empty($row['plan_water_effect']['text']) && empty($row['warnings']) && ($row['plan_cost_min'] ?? null) === null)
+                                <p class="dash" style="margin:0;font-size:8.5pt;">Geen extra opmerkingen.</p>
                             @endif
                         </td>
                     </tr>

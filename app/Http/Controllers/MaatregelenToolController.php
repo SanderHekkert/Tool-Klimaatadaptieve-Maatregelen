@@ -6,8 +6,11 @@ use App\Services\MaatregelFilterService;
 use App\Support\BijlageExcelLegendaReader;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class MaatregelenToolController extends Controller
@@ -20,6 +23,59 @@ class MaatregelenToolController extends Controller
     public function home(): View
     {
         return view('maatregelen-tool.home');
+    }
+
+    public function basisgids(): BinaryFileResponse|RedirectResponse
+    {
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="Basisgids-Klimaatadaptatie-Van-Wijnen.pdf"',
+        ];
+
+        $externalUrl = config('basisgids.external_url');
+        if (is_string($externalUrl) && $externalUrl !== '') {
+            return redirect()->away($externalUrl);
+        }
+
+        $diskName = config('basisgids.disk');
+        $storagePath = config('basisgids.storage_path');
+
+        if (is_string($diskName) && $diskName !== '' && config("filesystems.disks.{$diskName}")) {
+            $disk = Storage::disk($diskName);
+            if ($disk->exists($storagePath)) {
+                return $disk->response($storagePath, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
+            }
+        }
+
+        foreach (config('basisgids.local_paths', []) as $path) {
+            if (! is_string($path) || ! $this->isReadablePdf($path)) {
+                continue;
+            }
+
+            return response()->file($path, $headers);
+        }
+
+        abort(
+            503,
+            'De Basisgids is op deze omgeving niet beschikbaar. Op Laravel Cloud: koppel Object Storage, upload de PDF, en zet BASISGIDS_DISK=s3 (of gebruik BASISGIDS_PDF_URL). Zie config/basisgids.php.',
+        );
+    }
+
+    private function isReadablePdf(string $path): bool
+    {
+        if (! is_readable($path)) {
+            return false;
+        }
+
+        $handle = fopen($path, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+
+        $magic = fread($handle, 4);
+        fclose($handle);
+
+        return $magic === '%PDF';
     }
 
     public function index(): View

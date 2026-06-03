@@ -127,7 +127,7 @@ return [
             'id' => 'waterberging-vijvers',
             'naam' => 'Waterberging / waterbuffers / vijvers rondom gebouw',
             'niveaus' => ['gebied'],
-            'risicos' => ['wateroverlast'],
+            'risicos' => ['wateroverlast', 'overstromingsgevaar'],
             'investering_eenheid' => 'm2',
             'investering_min' => 15,
             'investering_max' => 60,

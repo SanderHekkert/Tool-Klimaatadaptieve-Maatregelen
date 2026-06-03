@@ -392,19 +392,12 @@
         </table>
     </div>
 
-    @if (! empty($meta['volume_m3'])
-        || (! empty($meta['risicos']) && count($meta['risicos']) === 1 && ($meta['risicos'][0] ?? null) === 'overstromingsgevaar')
-        || empty($meta['niveau_selected']))
+    @if (! empty($meta['volume_m3']) || empty($meta['niveau_selected']))
         <div class="alerts">
             @if (! empty($meta['volume_m3']))
                 <div class="alert">
                     <strong>Te bergen volume</strong> —
-                    {{ number_format((float) $meta['volume_m3'], 2, ',', '.') }} m³ (verhard × norm).
-                </div>
-            @endif
-            @if (! empty($meta['risicos']) && count($meta['risicos']) === 1 && ($meta['risicos'][0] ?? null) === 'overstromingsgevaar')
-                <div class="alert">
-                    In Bijlage E zijn <strong>geen maatregelen</strong> die uitsluitend op “overstromingsgevaar” zijn gekoppeld.
+                    {{ number_format((float) $meta['volume_m3'], 2, ',', '.') }} m³ (verhard oppervlak × norm in mm).
                 </div>
             @endif
             @if (empty($meta['niveau_selected']))

@@ -183,6 +183,35 @@ body.mt-body {
     color: var(--mt-text);
 }
 
+.mt-gids-intro {
+    margin: 0 0 1.5rem;
+    padding: 0.9rem 1.1rem;
+    max-width: 72ch;
+    font-size: 0.925rem;
+    line-height: 1.55;
+    color: var(--mt-info-text);
+    background: var(--mt-info-bg);
+    border: 1px solid var(--mt-info-border);
+    border-radius: var(--mt-radius-sm);
+}
+
+.mt-gids-intro a {
+    color: var(--mt-accent-hover);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.mt-gids-intro a:hover {
+    color: var(--mt-accent);
+}
+
+.mt-gids-intro__meta {
+    font-size: 0.85em;
+    color: var(--mt-muted);
+    font-weight: 500;
+}
+
 .mt-lead {
     color: var(--mt-text-secondary);
     margin: 0 0 1.75rem;
@@ -435,6 +464,22 @@ body.mt-body {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+.mt-section__intro {
+    margin: -0.35rem 0 1rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--mt-text-secondary);
+    max-width: 62ch;
+}
+
+.mt-field__intro {
+    margin: 0.2rem 0 0.65rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--mt-text-secondary);
+    max-width: 62ch;
 }
 
 .mt-section__title {

@@ -145,7 +145,7 @@ class MaatregelenToolController extends Controller
 
     private function normalizePreviewInput(Request $request): array
     {
-        $commaFields = ['budget', 'verhard_m2', 'bergingsnorm_m3_per_m2', 'beschikbaar_gebied_m2', 'beschikbaar_dak_m2'];
+        $commaFields = ['budget', 'verhard_m2', 'bergingsnorm_mm', 'beschikbaar_gebied_m2', 'beschikbaar_dak_m2'];
         $data = $request->all();
         foreach ($commaFields as $f) {
             if (isset($data[$f]) && is_string($data[$f])) {
@@ -185,7 +185,10 @@ class MaatregelenToolController extends Controller
                 ? []
                 : array_values(array_intersect($maatregelIdKeys, $maatregelIds)),
             'verhard_m2' => isset($data['verhard_m2']) && $data['verhard_m2'] !== '' ? (float) $data['verhard_m2'] : null,
-            'bergingsnorm_m3_per_m2' => isset($data['bergingsnorm_m3_per_m2']) && $data['bergingsnorm_m3_per_m2'] !== '' ? (float) $data['bergingsnorm_m3_per_m2'] : null,
+            'bergingsnorm_mm' => isset($data['bergingsnorm_mm']) && $data['bergingsnorm_mm'] !== '' ? (float) $data['bergingsnorm_mm'] : null,
+            'bergingsnorm_m3_per_m2' => isset($data['bergingsnorm_mm']) && $data['bergingsnorm_mm'] !== ''
+                ? (float) $data['bergingsnorm_mm'] / 1000
+                : null,
             'beschikbaar_gebied_m2' => isset($data['beschikbaar_gebied_m2']) && $data['beschikbaar_gebied_m2'] !== '' ? (float) $data['beschikbaar_gebied_m2'] : null,
             'beschikbaar_dak_m2' => isset($data['beschikbaar_dak_m2']) && $data['beschikbaar_dak_m2'] !== '' ? (float) $data['beschikbaar_dak_m2'] : null,
         ];
@@ -222,7 +225,7 @@ class MaatregelenToolController extends Controller
             ['label' => 'Niveau', 'value' => $niveauDelen !== [] ? implode(' + ', $niveauDelen) : '—'],
             ['label' => 'Risico', 'value' => $risicoLabels !== [] ? implode(', ', $risicoLabels) : 'Geen filter'],
             ['label' => 'Verhard', 'value' => $this->formatOptionalNumber($input['verhard_m2'] ?? null, 0).' m²'],
-            ['label' => 'Norm', 'value' => $this->formatOptionalNumber($input['bergingsnorm_m3_per_m2'] ?? null, 2).' m³/m²'],
+            ['label' => 'Norm', 'value' => $this->formatOptionalNumber($input['bergingsnorm_mm'] ?? null, 0).' mm'],
             ['label' => 'Gebied', 'value' => $this->formatOptionalNumber($input['beschikbaar_gebied_m2'] ?? null, 0).' m²'],
             ['label' => 'Dak', 'value' => $this->formatOptionalNumber($input['beschikbaar_dak_m2'] ?? null, 0).' m²'],
         ];

@@ -1,8 +1,15 @@
 @extends('maatregelen-tool.layout')
 
 @section('title', 'Overzicht klimaatadaptieve maatregelen (Bijlage E)')
+@section('hide_header', '1')
 
 @section('content')
+    <p class="mt-gids-intro">
+        Deze tool bevat een selectie van maatregelen; voor een volledige toelichting op deze maatregelen en een uitgebreid overzicht van alle klimaatadaptieve maatregelen, zie de
+        <a href="{{ asset('documents/DUU- Basisgids klimaatadaptatie.pdf') }}" target="_blank" rel="noopener noreferrer">Basisgids Klimaatadaptatie van Van Wijnen</a>
+        <span class="mt-gids-intro__meta">(PDF)</span>.
+    </p>
+
     <div class="mt-split">
         <div class="mt-split__col mt-split__col--form">
             <h1 class="mt-page-title">Overzicht klimaatadaptieve maatregelen</h1>
@@ -36,6 +43,9 @@
 
                 <section class="mt-section">
                     <h2 class="mt-section__title">Klimaatrisico</h2>
+                    <p class="mt-section__intro">
+                        Inzicht in klimaatrisico’s via Klimaatstresstesten, het Nationaal Dashboard Toekomstbestendige Leefomgeving en NL Greenlabel; bij vragen kunnen de duurzaamheidsadviseurs uit jouw regio worden geraadpleegd.
+                    </p>
                     <div class="mt-chip-grid">
                         @foreach ($risicoOpties as $key => $label)
                             <label class="mt-check">
@@ -44,24 +54,30 @@
                             </label>
                         @endforeach
                     </div>
-                    <p class="mt-hint">Leeg laten = geen filter op risico. Alleen “overstromingsgevaar” heeft in Bijlage E geen gekoppelde maatregelen.</p>
+                    <p class="mt-hint">Leeg laten = geen filter op risico.</p>
                 </section>
 
                 <section class="mt-section">
                     <h2 class="mt-section__title">Verhard oppervlak (m²)</h2>
                     <div>
-                        <label class="mt-label" for="verhard_m2">Aandeel ‘hard’ oppervlak</label>
-                        <input class="mt-input" id="verhard_m2" name="verhard_m2" type="text" placeholder="bijv. 200" autocomplete="off" inputmode="decimal">
+                        <label class="mt-label" for="verhard_m2">Aandeel verhard oppervlak</label>
+                        <p class="mt-field__intro">
+                            Het totale oppervlak van daken, verharding en andere niet-doorlatende delen waar regenwater niet kan infiltreren.
+                        </p>
+                        <input class="mt-input" id="verhard_m2" name="verhard_m2" type="text" placeholder="bijv. 200 m²" autocomplete="off" inputmode="decimal">
                         <p class="mt-hint">Gebruikt voor de som met de waterbergingsnorm.</p>
                     </div>
                 </section>
 
                 <section class="mt-section">
-                    <h2 class="mt-section__title">Te behalen waterbergingsnorm (m³ per m²)</h2>
+                    <h2 class="mt-section__title">Te behalen waterbergingsnorm (liter per m²)</h2>
                     <div>
-                        <label class="mt-label" for="bergingsnorm_m3_per_m2">Norm (m³/m²)</label>
-                        <input class="mt-input" id="bergingsnorm_m3_per_m2" name="bergingsnorm_m3_per_m2" type="text" placeholder="bijv. 0,06" autocomplete="off" inputmode="decimal">
-                        <p class="mt-hint">Bijvoorbeeld 200 m² × 0,06 = 12 m³ te bergen.</p>
+                        <label class="mt-label" for="bergingsnorm_mm">Norm (mm)</label>
+                        <p class="mt-field__intro">
+                            De bergingsnorm is een gemeentelijke eis; indien deze niet bekend is, kan worden uitgegaan van 60&nbsp;mm (60&nbsp;l/m²).
+                        </p>
+                        <input class="mt-input" id="bergingsnorm_mm" name="bergingsnorm_mm" type="text" placeholder="bijv. 60 mm" autocomplete="off" inputmode="decimal">
+                        <p class="mt-hint">Bijvoorbeeld 200 m² × 60 mm = 12 m³ te bergen.</p>
                     </div>
                 </section>
 
@@ -69,16 +85,16 @@
                     <h2 class="mt-section__title">Beschikbaar oppervlak in het gebied (m²)</h2>
                     <div>
                         <label class="mt-label" for="beschikbaar_gebied_m2">Beschikbaar gebied</label>
-                        <input class="mt-input" id="beschikbaar_gebied_m2" name="beschikbaar_gebied_m2" type="text" placeholder="bijv. 40" autocomplete="off" inputmode="decimal">
+                        <input class="mt-input" id="beschikbaar_gebied_m2" name="beschikbaar_gebied_m2" type="text" placeholder="bijv. 40 m²" autocomplete="off" inputmode="decimal">
                         <p class="mt-hint">Te klein = gebiedsmaatregelen kunnen wegvallen (oppervlak, percentages, bergings-m²).</p>
                     </div>
                 </section>
 
                 <section class="mt-section">
-                    <h2 class="mt-section__title">Beschikbaar dakoppervlak (m², optioneel)</h2>
+                    <h2 class="mt-section__title">Beschikbaar dakoppervlak (m²)</h2>
                     <div>
                         <label class="mt-label" for="beschikbaar_dak_m2">Dakoppervlak</label>
-                        <input class="mt-input" id="beschikbaar_dak_m2" name="beschikbaar_dak_m2" type="text" placeholder="bijv. 120" autocomplete="off" inputmode="decimal">
+                        <input class="mt-input" id="beschikbaar_dak_m2" name="beschikbaar_dak_m2" type="text" placeholder="bijv. 120 m²" autocomplete="off" inputmode="decimal">
                         <p class="mt-hint">Alleen voor retentiedaken: vergelijking met benodigde m².</p>
                     </div>
                 </section>
@@ -110,5 +126,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=5" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=7" defer></script>
 @endpush

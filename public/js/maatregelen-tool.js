@@ -69,15 +69,6 @@
                     " m³</div>",
             );
         }
-        if (
-            Array.isArray(meta.risicos) &&
-            meta.risicos.length === 1 &&
-            meta.risicos[0] === "overstromingsgevaar"
-        ) {
-            parts.push(
-                '<div class="mt-alert mt-alert--warn" style="margin:0 0 0.75rem;">In Bijlage E zijn geen maatregelen die uitsluitend op “overstromingsgevaar” zijn gekoppeld.</div>',
-            );
-        }
         if (!meta.niveau_selected) {
             parts.push(
                 '<div class="mt-alert mt-alert--warn" style="margin:0;">Vink minimaal één schaalniveau aan om maatregelen te kunnen filteren.</div>',
@@ -144,7 +135,7 @@
               '" type="number" min="0" step="0.1" value="' +
               h(qty || "") +
               '" placeholder="bijv. ' +
-              (planner.invoer_eenheid === "m2" ? "25" : "3") +
+              (planner.invoer_eenheid === "m2" ? "25 m²" : "3 stuks") +
               '"></div>'
             : '<p class="mt-hint" style="margin-top:.5rem;">Voor deze maatregel is geen m²/stuks-invoer beschikbaar.</p>';
         const perMeasureCost = computeMeasureCost(i, qty);

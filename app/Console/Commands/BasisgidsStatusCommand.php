@@ -66,6 +66,18 @@ class BasisgidsStatusCommand extends Command
             $candidates[] = $default;
         }
 
+        $cloudConfig = env('LARAVEL_CLOUD_DISK_CONFIG');
+        if (is_string($cloudConfig) && $cloudConfig !== '') {
+            $decoded = json_decode($cloudConfig, true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $entry) {
+                    if (is_array($entry) && is_string($entry['disk'] ?? null) && $entry['disk'] !== '') {
+                        $candidates[] = $entry['disk'];
+                    }
+                }
+            }
+        }
+
         $candidates[] = 's3';
 
         foreach (config('filesystems.disks', []) as $name => $diskConfig) {

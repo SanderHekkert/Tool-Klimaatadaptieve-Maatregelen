@@ -6,12 +6,11 @@ use App\Services\MaatregelFilterService;
 use App\Support\BijlageExcelLegendaReader;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class MaatregelenToolController extends Controller
 {
@@ -25,29 +24,40 @@ class MaatregelenToolController extends Controller
         return view('maatregelen-tool.home');
     }
 
-    public function basisgids(): BinaryFileResponse|RedirectResponse
+    public function basisgids(): Response
     {
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="Basisgids-Klimaatadaptatie-Van-Wijnen.pdf"',
         ];
 
-        $externalUrl = config('basisgids.external_url');
-        if (is_string($externalUrl) && $externalUrl !== '') {
-            return redirect()->away($externalUrl);
-        }
-
-        $fromStorage = $this->basisgidsFromObjectStorage($headers);
-        if ($fromStorage !== null) {
-            return $fromStorage;
-        }
-
-        foreach (config('basisgids.local_paths', []) as $path) {
-            if (! is_string($path) || ! $this->isReadablePdf($path)) {
-                continue;
+        try {
+            $externalUrl = config('basisgids.external_url');
+            if (is_string($externalUrl) && $externalUrl !== '') {
+                return redirect()->away($externalUrl);
             }
 
-            return response()->file($path, $headers);
+            $fromStorage = $this->basisgidsFromObjectStorage($headers);
+            if ($fromStorage !== null) {
+                return $fromStorage;
+            }
+
+            foreach (config('basisgids.local_paths', []) as $path) {
+                if (! is_string($path) || ! $this->isReadablePdf($path)) {
+                    continue;
+                }
+
+                return response()->file($path, $headers);
+            }
+        } catch (Throwable $e) {
+            report($e);
+
+            abort(
+                503,
+                config('app.debug')
+                    ? 'Basisgids-fout: '.$e->getMessage()
+                    : 'De Basisgids kan nu niet worden geladen. Controleer object storage en BASISGIDS_DISK / BASISGIDS_STORAGE_PATH.',
+            );
         }
 
         abort(
@@ -59,7 +69,7 @@ class MaatregelenToolController extends Controller
     /**
      * @param  array<string, string>  $headers
      */
-    private function basisgidsFromObjectStorage(array $headers): ?BinaryFileResponse
+    private function basisgidsFromObjectStorage(array $headers): ?Response
     {
         $paths = array_values(array_unique(array_filter([
             config('basisgids.storage_path'),
@@ -67,14 +77,21 @@ class MaatregelenToolController extends Controller
         ], static fn (mixed $path): bool => is_string($path) && $path !== '')));
 
         foreach ($this->basisgidsDiskCandidates() as $diskName) {
+            if (! config("filesystems.disks.{$diskName}")) {
+                continue;
+            }
+
             $disk = Storage::disk($diskName);
 
             foreach ($paths as $path) {
                 try {
-                    if ($disk->exists($path)) {
-                        return $disk->response($path, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
+                    if (! $disk->exists($path)) {
+                        continue;
                     }
-                } catch (\Throwable) {
+
+                    // response() geeft StreamedResponse, geen BinaryFileResponse
+                    return $disk->response($path, 'Basisgids-Klimaatadaptatie-Van-Wijnen.pdf', $headers);
+                } catch (Throwable) {
                     continue;
                 }
             }
@@ -98,6 +115,18 @@ class MaatregelenToolController extends Controller
         $default = config('filesystems.default');
         if (is_string($default) && $default !== '') {
             $candidates[] = $default;
+        }
+
+        $cloudConfig = env('LARAVEL_CLOUD_DISK_CONFIG');
+        if (is_string($cloudConfig) && $cloudConfig !== '') {
+            $decoded = json_decode($cloudConfig, true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $entry) {
+                    if (is_array($entry) && is_string($entry['disk'] ?? null) && $entry['disk'] !== '') {
+                        $candidates[] = $entry['disk'];
+                    }
+                }
+            }
         }
 
         $candidates[] = 's3';

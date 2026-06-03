@@ -79,6 +79,7 @@ return [
             'effect_tekst' => '0,0005 m³ waterberging per m²',
             'technisch' => 'Geen harde minimale eis; struik circa 1 m² groeiruimte',
             'waterberging' => ['soort' => 'per_m2', 'min_m3' => 0.0005, 'max_m3' => 0.0005],
+            'gebied_oppervlak_min_m2' => 1,
         ],
         [
             'id' => 'vegetatie-lokaal-klimaat',
@@ -93,6 +94,7 @@ return [
             'effect_tekst' => '0,0005 m³ waterberging per m²',
             'technisch' => 'Geen harde minimale eis; struik circa 1 m² groeiruimte',
             'waterberging' => ['soort' => 'per_m2', 'min_m3' => 0.0005, 'max_m3' => 0.0005],
+            'gebied_oppervlak_min_m2' => 1,
         ],
         [
             'id' => 'tegels-eruit-groen-erin',
@@ -107,6 +109,7 @@ return [
             'effect_tekst' => '0,0005 m³ waterberging per m²',
             'technisch' => 'Geen harde minimale eis; struik circa 1 m² groeiruimte',
             'waterberging' => ['soort' => 'per_m2', 'min_m3' => 0.0005, 'max_m3' => 0.0005],
+            'gebied_oppervlak_min_m2' => 1,
         ],
         [
             'id' => 'groen-blauwe-daken',
@@ -208,21 +211,7 @@ return [
             'effect_tekst' => 'Gevel/dak 0,1–0,9 °C; lichte bestrating tot 1,9 °C luchttemperatuurdaling',
             'technisch' => 'Situatieafhankelijk; risico op weerkaatsing/verblinding en extra stralingsbelasting',
             'waterberging' => null,
-        ],
-        [
-            'id' => 'eigen-watervoorziening',
-            'naam' => 'Eigen watervoorziening vanuit waterberging of andere bron, 3–4 dagen garantie',
-            'niveaus' => ['gebouw'],
-            'risicos' => ['droogte'],
-            'investering_eenheid' => 'onbekend',
-            'investering_min' => null,
-            'investering_max' => null,
-            'investering_tekst' => 'Nog niet ingevuld in Bijlage E',
-            'onderhoud_jaar' => 'Nog niet ingevuld',
-            'effect_tekst' => 'Nog niet ingevuld',
-            'technisch' => 'Nog niet ingevuld',
-            'waterberging' => null,
-            'bijlage_onvolledig' => true,
+            'geen_planner_invoer' => true,
         ],
         [
             'id' => 'passieve-luchtstroom',
@@ -237,6 +226,7 @@ return [
             'effect_tekst' => '1,0-3,0 °C gevoelstemperatuur daling',
             'technisch' => 'Ventilatieroosters zijn minder effectief op een hete zomerdag.',
             'waterberging' => null,
+            'geen_planner_invoer' => true,
         ],
         [
             'id' => 'buitenzonwering',
@@ -279,6 +269,7 @@ return [
             'effect_tekst' => '2-5 keer verlenging thermisch comfort',
             'technisch' => '-',
             'waterberging' => null,
+            'geen_planner_invoer' => true,
         ],
         [
             'id' => 'hemelwater-afkoppelen',
@@ -290,9 +281,10 @@ return [
             'investering_max' => 0,
             'investering_tekst' => 'Geen sprake van investeringskosten / stuk',
             'onderhoud_jaar' => '€75-150; 1× per jaar controle/reiniging',
-            'effect_tekst' => 'Effect is niet meetbaar',
+            'effect_tekst' => 'Effect is niet meetbaar. Leidt hemelwater af naar andere waterbergingsmaatregelen en draagt zelf niet bij aan opvang of infiltratie.',
             'technisch' => 'Er moeten extra maatregelen getroffen worden om het regenwater op te vangen.',
             'waterberging' => null,
+            'geen_planner_invoer' => true,
         ],
     ],
 ];

@@ -107,7 +107,6 @@
             <div class="mt-results-panel">
                 <div class="mt-results-panel__head">
                     <h2 class="mt-results-panel__title">Resultaat</h2>
-                    <p class="mt-results-panel__sub">Alle maatregelen uit Bijlage E. Voldoen of wegvallen met reden.</p>
                     <div id="mt-live-status" class="mt-live-status">Laden…</div>
                     <div class="mt-results-panel__actions">
                         <button type="button" id="mt-pdf-btn" class="mt-btn mt-btn--secondary mt-btn--small">Download als PDF</button>
@@ -126,5 +125,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=7" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=8" defer></script>
 @endpush

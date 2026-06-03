@@ -420,7 +420,7 @@
             @endif
             @if (!empty($planSummary['has_volume_target']))
                 <br>
-                <strong>Nog te bergen water (conservatief):</strong>
+                <strong>Nog te bergen water:</strong>
                 {{ number_format((float) ($planSummary['remaining_water_m3'] ?? 0), 2, ',', '.') }} m³
             @endif
         </div>

@@ -150,8 +150,10 @@ class MaatregelFilterService
                 $failures[] = 'Beschikbaar gebied is te klein (min. oppervlak, percentage t.o.v. verharding of benodigde bergings-m²).';
             }
 
-            if (! $this->matchesBeschikbaarDak($m, $water, $beschikbaarDak, $warnings)) {
-                $failures[] = 'Beschikbaar dakoppervlak is te klein voor de benodigde retentie-m².';
+            if (! $this->matchesBeschikbaarDak($m, $water, $beschikbaarDak, $failures, $warnings)) {
+                if ($failures === []) {
+                    $failures[] = 'Beschikbaar dakoppervlak is te klein voor de benodigde retentie-m².';
+                }
             }
 
             $pass = $failures === [];
@@ -173,7 +175,9 @@ class MaatregelFilterService
                 'water' => $pass ? $water : null,
                 'warnings' => $pass ? $warnings : [],
                 'planner' => [
-                    'invoer_eenheid' => in_array($m['investering_eenheid'] ?? null, ['m2', 'stuk'], true) ? $m['investering_eenheid'] : null,
+                    'invoer_eenheid' => ! empty($m['geen_planner_invoer'])
+                        ? null
+                        : (in_array($m['investering_eenheid'] ?? null, ['m2', 'stuk'], true) ? $m['investering_eenheid'] : null),
                     'kosten_min_per_eenheid' => isset($m['investering_min']) ? (float) $m['investering_min'] : null,
                     'kosten_max_per_eenheid' => isset($m['investering_max']) ? (float) $m['investering_max'] : null,
                     'water_min_per_eenheid' => ($m['waterberging']['soort'] ?? null) === 'per_m2' || ($m['waterberging']['soort'] ?? null) === 'per_boom'
@@ -390,6 +394,15 @@ class MaatregelFilterService
             return true;
         }
 
+        if (isset($m['gebied_oppervlak_min_m2'])) {
+            $minGebied = (float) $m['gebied_oppervlak_min_m2'];
+            if ($besch + 1e-6 < $minGebied) {
+                return false;
+            }
+
+            return true;
+        }
+
         if (isset($m['min_oppervlak_gebied_m2'])) {
             $minG = (float) $m['min_oppervlak_gebied_m2'];
             if ($besch + 1e-6 < $minG) {
@@ -422,11 +435,15 @@ class MaatregelFilterService
      * @param  array<string, mixed>|null  $water
      * @param  list<string>  $reasons
      */
-    private function matchesBeschikbaarDak(array $m, ?array $water, mixed $beschikbaarDak, array &$reasons): bool
+    private function matchesBeschikbaarDak(array $m, ?array $water, mixed $beschikbaarDak, array &$failures, array &$warnings): bool
     {
+        if (($m['id'] ?? '') !== 'groen-blauwe-daken') {
+            return true;
+        }
+
         if ($beschikbaarDak === null || $beschikbaarDak === '') {
-            if (($m['id'] ?? '') === 'groen-blauwe-daken' && isset($m['min_dakoppervlak_tip_m2'])) {
-                $reasons[] = 'Tip uit Bijlage E: retentiedak is nuttig vanaf circa '.$m['min_dakoppervlak_tip_m2'].' m² dakoppervlak.';
+            if (isset($m['min_dakoppervlak_tip_m2'])) {
+                $warnings[] = 'Tip uit Bijlage E: retentiedak is nuttig vanaf circa '.$m['min_dakoppervlak_tip_m2'].' m² dakoppervlak.';
             }
 
             return true;
@@ -437,15 +454,29 @@ class MaatregelFilterService
             return true;
         }
 
-        if (($m['id'] ?? '') !== 'groen-blauwe-daken') {
-            return true;
-        }
-
         if ($water !== null && ($water['soort'] ?? null) === 'per_m2') {
             $nodig = (float) ($water['m2_bij_minste_effect'] ?? 0);
             if ($nodig > 0 && $dak + 1e-6 < $nodig) {
+                $failures[] = sprintf(
+                    'Beschikbaar dak (%s m²) is kleiner dan indicatief benodigd retentie-oppervlak (%s m²).',
+                    number_format($dak, 0, ',', '.'),
+                    number_format($nodig, 1, ',', '.'),
+                );
+
                 return false;
             }
+
+            return true;
+        }
+
+        if ($dak + 1e-6 < 1) {
+            $failures[] = 'Minimaal circa 1 m² dakoppervlak om een retentiedak te overwegen.';
+
+            return false;
+        }
+
+        if (isset($m['min_dakoppervlak_tip_m2']) && $dak < (float) $m['min_dakoppervlak_tip_m2']) {
+            $warnings[] = 'Tip uit Bijlage E: retentiedak is nuttig vanaf circa '.$m['min_dakoppervlak_tip_m2'].' m² dakoppervlak.';
         }
 
         return true;

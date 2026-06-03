@@ -145,7 +145,13 @@ class MaatregelenToolController extends Controller
 
     private function normalizePreviewInput(Request $request): array
     {
-        $commaFields = ['budget', 'verhard_m2', 'bergingsnorm_mm', 'beschikbaar_gebied_m2', 'beschikbaar_dak_m2'];
+        $commaFields = [
+            'budget',
+            'verhard_m2',
+            'bergingsnorm_mm',
+            'beschikbaar_gebied_m2',
+            'beschikbaar_dak_m2',
+        ];
         $data = $request->all();
         foreach ($commaFields as $f) {
             if (isset($data[$f]) && is_string($data[$f])) {

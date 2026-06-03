@@ -247,7 +247,7 @@
             const target = Number(currentMeta.volume_m3 || 0);
             const remain = Math.max(0, target - totalWaterMin);
             pieces.push(
-                '<div class="mt-alert mt-alert--warn" style="margin:0;"><strong>Nog te bergen water (conservatief):</strong> ' +
+                '<div class="mt-alert mt-alert--warn" style="margin:0;"><strong>Nog te bergen water:</strong> ' +
                     h(
                         remain.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,

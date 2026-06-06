@@ -1762,3 +1762,128 @@ body.mt-body {
         min-width: 0;
     }
 }
+
+/* ——— Vergelijkingsdiagram bergingsvolume ——— */
+.mt-chart-panel {
+    margin-top: 1.25rem;
+    background: var(--mt-surface);
+    border: 1px solid var(--mt-border);
+    border-radius: var(--mt-radius);
+    box-shadow: var(--mt-shadow-sm);
+    overflow: hidden;
+}
+
+.mt-chart-panel__head {
+    padding: 1rem 1.1rem 0.85rem;
+    border-bottom: 1px solid var(--mt-border);
+}
+
+.mt-chart-panel__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--mt-text);
+}
+
+.mt-chart-panel__intro {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mt-muted);
+    line-height: 1.45;
+}
+
+.mt-chart-panel__body {
+    padding: 1rem 1.1rem 1.15rem;
+    display: grid;
+    gap: 1.25rem;
+}
+
+.mt-chart-empty {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mt-muted);
+    line-height: 1.45;
+}
+
+.mt-chart-block__title {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--mt-text-secondary);
+}
+
+.mt-chart-block__hint {
+    margin: 0 0 0.75rem;
+    font-size: 0.78rem;
+    color: var(--mt-muted);
+    line-height: 1.4;
+}
+
+.mt-chart-rows {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.mt-chart-row {
+    display: grid;
+    grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr) auto;
+    gap: 0.55rem;
+    align-items: center;
+}
+
+.mt-chart-row__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--mt-text-secondary);
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.mt-chart-row__track {
+    position: relative;
+    height: 0.72rem;
+    background: var(--mt-bg);
+    border: 1px solid var(--mt-border);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.mt-chart-row__bar {
+    height: 100%;
+    min-width: 2px;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+}
+
+.mt-chart-row__bar--qty {
+    background: linear-gradient(90deg, #14b8a6, #0d9488);
+}
+
+.mt-chart-row__bar--cost {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.mt-chart-row__value {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--mt-text);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+    .mt-chart-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.25rem;
+    }
+
+    .mt-chart-row__value {
+        padding-left: 0.1rem;
+    }
+}

@@ -13,6 +13,7 @@
     const passEl = document.getElementById("mt-live-pass");
     const failEl = document.getElementById("mt-live-fail");
     const statusEl = document.getElementById("mt-live-status");
+    const chartBodyEl = document.getElementById("mt-volume-chart-body");
 
     const debounceMs = 380;
     let timer = null;
@@ -209,6 +210,142 @@
         return "€ " + a + " – € " + b;
     }
 
+    function formatQtyValue(row, field) {
+        const value = Number(row[field] || 0);
+        const unit = row.eenheid_label || "";
+        if (row.eenheid === "m2") {
+            return (
+                value.toLocaleString("nl-NL", {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                }) +
+                " " +
+                unit
+            );
+        }
+        return (
+            Math.round(value).toLocaleString("nl-NL") + " " + unit
+        );
+    }
+
+    function formatQtyRange(row) {
+        const min = Number(row.qty_min || 0);
+        const max = Number(row.qty_max || 0);
+        if (Math.abs(min - max) < (row.eenheid === "m2" ? 0.05 : 0.5)) {
+            return formatQtyValue(row, "qty_max");
+        }
+        return formatQtyValue(row, "qty_min") + " – " + formatQtyValue(row, "qty_max");
+    }
+
+    function renderBarRows(rows, field, valueFormatter, barClass, maxValue) {
+        return rows
+            .map(function (row) {
+                const raw = Number(row[field] || 0);
+                const pct =
+                    maxValue > 0
+                        ? Math.max(2, Math.min(100, (raw / maxValue) * 100))
+                        : 0;
+                const title =
+                    row.naam +
+                    ": " +
+                    valueFormatter(row) +
+                    (field === "qty_max"
+                        ? " nodig voor volledige berging"
+                        : "");
+                return (
+                    '<div class="mt-chart-row" title="' +
+                    h(title) +
+                    '">' +
+                    '<span class="mt-chart-row__label">' +
+                    h(row.naam) +
+                    "</span>" +
+                    '<div class="mt-chart-row__track">' +
+                    '<div class="mt-chart-row__bar ' +
+                    barClass +
+                    '" style="width:' +
+                    pct +
+                    '%"></div>' +
+                    "</div>" +
+                    '<span class="mt-chart-row__value">' +
+                    h(valueFormatter(row)) +
+                    "</span>" +
+                    "</div>"
+                );
+            })
+            .join("");
+    }
+
+    function renderVolumeChart(rows, meta) {
+        if (!chartBodyEl) {
+            return;
+        }
+        if (!meta || meta.volume_m3 == null) {
+            chartBodyEl.innerHTML =
+                '<p class="mt-chart-empty">Vul verhard oppervlak en bergingsnorm in om de vergelijking te zien.</p>';
+            return;
+        }
+        if (!Array.isArray(rows) || rows.length === 0) {
+            chartBodyEl.innerHTML =
+                '<p class="mt-chart-empty">Geen passende maatregelen met waterberging voor dit volume. Pas je filters aan of vul meer oppervlak in.</p>';
+            return;
+        }
+
+        const maxQty = Math.max.apply(
+            null,
+            rows.map(function (r) {
+                return Number(r.qty_max || 0);
+            }),
+        );
+        const costRows = rows.filter(function (r) {
+            return r.kosten_min != null;
+        });
+        const maxCost = costRows.length
+            ? Math.max.apply(
+                  null,
+                  costRows.map(function (r) {
+                      return Number(r.kosten_max || r.kosten_min || 0);
+                  }),
+              )
+            : 0;
+
+        let html =
+            '<section class="mt-chart-block">' +
+            '<h3 class="mt-chart-block__title">Benodigde hoeveelheid</h3>' +
+            '<p class="mt-chart-block__hint">Range bij hoog tot lager effect per eenheid (m², stuks of bomen).</p>' +
+            '<div class="mt-chart-rows">' +
+            renderBarRows(
+                rows,
+                "qty_max",
+                formatQtyRange,
+                "mt-chart-row__bar--qty",
+                maxQty,
+            ) +
+            "</div></section>";
+
+        if (costRows.length > 0) {
+            html +=
+                '<section class="mt-chart-block">' +
+                '<h3 class="mt-chart-block__title">Indicatieve aanlegkosten</h3>' +
+                '<p class="mt-chart-block__hint">Bijbehorende kosten voor dezelfde hoeveelheden (min–max).</p>' +
+                '<div class="mt-chart-rows">' +
+                renderBarRows(
+                    costRows,
+                    "kosten_max",
+                    function (row) {
+                        return formatEuroRange(row.kosten_min, row.kosten_max);
+                    },
+                    "mt-chart-row__bar--cost",
+                    maxCost,
+                ) +
+                "</div></section>";
+        } else {
+            html +=
+                '<p class="mt-chart-empty">Geen kostenindicatie beschikbaar voor deze maatregelen.</p>';
+        }
+
+        chartBodyEl.innerHTML = html;
+    }
+
     function renderPlannerSummary() {
         if (!planEl) {
             return;
@@ -362,6 +499,7 @@
             });
             renderChips(data.filter_chips || []);
             renderMeta(currentMeta);
+            renderVolumeChart(data.volume_vergelijking || [], currentMeta);
             renderPass(data.items || []);
             renderFail(data.items || []);
             setStatus(false, false);

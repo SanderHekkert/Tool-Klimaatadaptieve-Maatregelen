@@ -113,6 +113,7 @@ class MaatregelFilterService
         $items = [];
         $passCount = 0;
         $consideredCount = 0;
+        $volumeVergelijking = [];
         foreach ($measures as $m) {
             if (! $overweegAlleMaatregelen && ! in_array((string) ($m['id'] ?? ''), $selectedIds, true)) {
                 continue;
@@ -160,6 +161,12 @@ class MaatregelFilterService
             $pass = $failures === [];
             if ($pass) {
                 $passCount++;
+                if ($water !== null) {
+                    $vergelijking = $this->volumeVergelijkingEntry($m, $water);
+                    if ($vergelijking !== null) {
+                        $volumeVergelijking[] = $vergelijking;
+                    }
+                }
             }
 
             $items[] = [
@@ -192,6 +199,16 @@ class MaatregelFilterService
             ];
         }
 
+        usort($volumeVergelijking, function (array $a, array $b): int {
+            $costA = $a['kosten_min'] ?? PHP_FLOAT_MAX;
+            $costB = $b['kosten_min'] ?? PHP_FLOAT_MAX;
+            if (abs($costA - $costB) > 0.01) {
+                return $costA <=> $costB;
+            }
+
+            return ($a['qty_max'] ?? 0) <=> ($b['qty_max'] ?? 0);
+        });
+
         return [
             'meta' => [
                 'volume_m3' => $volumeM3,
@@ -202,6 +219,7 @@ class MaatregelFilterService
                 'niveau_selected' => $userGebied || $userGebouw,
             ],
             'items' => $items,
+            'volume_vergelijking' => $volumeVergelijking,
         ];
     }
 
@@ -509,5 +527,69 @@ class MaatregelFilterService
         }
 
         return true;
+    }
+
+    /**
+     * @param  array<string, mixed>  $m
+     * @param  array<string, mixed>  $water
+     * @return array<string, mixed>|null
+     */
+    private function volumeVergelijkingEntry(array $m, array $water): ?array
+    {
+        $soort = $water['soort'] ?? null;
+        if (! in_array($soort, ['per_m2', 'per_boom', 'per_stuk'], true)) {
+            return null;
+        }
+
+        if ($soort === 'per_m2') {
+            $eenheid = 'm2';
+            $eenheidLabel = 'm²';
+            $qtyMin = (float) ($water['m2_bij_meeste_effect'] ?? 0);
+            $qtyMax = (float) ($water['m2_bij_minste_effect'] ?? 0);
+        } elseif ($soort === 'per_boom') {
+            $eenheid = 'boom';
+            $eenheidLabel = 'bomen';
+            $qtyMin = (float) ($water['bomen_bij_meeste_effect'] ?? 0);
+            $qtyMax = (float) ($water['bomen_bij_minste_effect'] ?? 0);
+        } else {
+            $eenheid = 'stuk';
+            $eenheidLabel = 'stuks';
+            $qtyMin = (float) ($water['stuks_bij_meeste_effect'] ?? 0);
+            $qtyMax = (float) ($water['stuks_bij_minste_effect'] ?? 0);
+        }
+
+        if ($qtyMax <= 0) {
+            return null;
+        }
+
+        $costMin = null;
+        $costMax = null;
+        $invEenheid = $m['investering_eenheid'] ?? null;
+        $invMin = isset($m['investering_min']) ? (float) $m['investering_min'] : null;
+        $invMax = isset($m['investering_max']) ? (float) $m['investering_max'] : $invMin;
+
+        if ($invMin !== null) {
+            if ($invEenheid === 'project') {
+                $costMin = $invMin;
+                $costMax = $invMax ?? $invMin;
+            } elseif ($invEenheid === 'm2' && $soort === 'per_m2') {
+                $costMin = $invMin * $qtyMin;
+                $costMax = ($invMax ?? $invMin) * $qtyMax;
+            } elseif ($invEenheid === 'stuk' && in_array($soort, ['per_stuk', 'per_boom'], true)) {
+                $costMin = $invMin * $qtyMin;
+                $costMax = ($invMax ?? $invMin) * $qtyMax;
+            }
+        }
+
+        return [
+            'id' => (string) ($m['id'] ?? ''),
+            'naam' => (string) ($m['naam'] ?? ''),
+            'eenheid' => $eenheid,
+            'eenheid_label' => $eenheidLabel,
+            'qty_min' => round($qtyMin, $eenheid === 'm2' ? 1 : 0),
+            'qty_max' => round($qtyMax, $eenheid === 'm2' ? 1 : 0),
+            'kosten_min' => $costMin !== null ? round($costMin, 2) : null,
+            'kosten_max' => $costMax !== null ? round($costMax, 2) : null,
+        ];
     }
 }

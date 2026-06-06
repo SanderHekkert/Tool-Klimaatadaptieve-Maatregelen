@@ -160,6 +160,7 @@ class MaatregelenToolController extends Controller
             'filter_chips' => $this->buildFilterChips($input),
             'meta' => $analysis['meta'],
             'items' => $analysis['items'],
+            'volume_vergelijking' => $analysis['volume_vergelijking'] ?? [],
         ]);
     }
 

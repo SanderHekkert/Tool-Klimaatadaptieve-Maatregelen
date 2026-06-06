@@ -103,6 +103,18 @@
 
             </form>
 
+            <div id="mt-volume-chart" class="mt-chart-panel" aria-live="polite">
+                <div class="mt-chart-panel__head">
+                    <h2 class="mt-chart-panel__title">Vergelijking bergingsvolume</h2>
+                    <p class="mt-chart-panel__intro">
+                        Per passende maatregel met waterberging: hoeveel m², stuks of bomen nodig is om het te bergen volume volledig te halen, en wat de indicatieve aanlegkosten zijn.
+                    </p>
+                </div>
+                <div id="mt-volume-chart-body" class="mt-chart-panel__body">
+                    <p class="mt-chart-empty">Vul verhard oppervlak en bergingsnorm in om de vergelijking te zien.</p>
+                </div>
+            </div>
+
         </div>
 
         <aside class="mt-split__col mt-split__col--results" aria-label="Live resultaat">
@@ -127,5 +139,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=8" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=9" defer></script>
 @endpush

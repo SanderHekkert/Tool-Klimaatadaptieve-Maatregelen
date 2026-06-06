@@ -351,7 +351,11 @@ class MaatregelenToolController extends Controller
         $waterMax = $effectMax * $qty;
 
         $invoerEenheid = ($planner['invoer_eenheid'] ?? null) === 'm2' ? 'm²' : 'stuks';
-        $effectEenheid = ($planner['water_soort'] ?? null) === 'per_boom' ? 'm³/boom' : 'm³/m²';
+        $effectEenheid = match ($planner['water_soort'] ?? null) {
+            'per_boom' => 'm³/boom',
+            'per_stuk' => 'm³/stuk',
+            default => 'm³/m²',
+        };
         $qtyLabel = number_format($qty, 1, ',', '.');
 
         if (abs($effectMax - $effectMin) < 0.000001) {

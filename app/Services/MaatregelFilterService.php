@@ -181,10 +181,10 @@ class MaatregelFilterService
                         : (in_array($m['investering_eenheid'] ?? null, ['m2', 'stuk'], true) ? $m['investering_eenheid'] : null),
                     'kosten_min_per_eenheid' => isset($m['investering_min']) ? (float) $m['investering_min'] : null,
                     'kosten_max_per_eenheid' => isset($m['investering_max']) ? (float) $m['investering_max'] : null,
-                    'water_min_per_eenheid' => ($m['waterberging']['soort'] ?? null) === 'per_m2' || ($m['waterberging']['soort'] ?? null) === 'per_boom'
+                    'water_min_per_eenheid' => in_array($m['waterberging']['soort'] ?? null, ['per_m2', 'per_boom', 'per_stuk'], true)
                         ? (float) ($m['waterberging']['min_m3'] ?? 0)
                         : null,
-                    'water_max_per_eenheid' => ($m['waterberging']['soort'] ?? null) === 'per_m2' || ($m['waterberging']['soort'] ?? null) === 'per_boom'
+                    'water_max_per_eenheid' => in_array($m['waterberging']['soort'] ?? null, ['per_m2', 'per_boom', 'per_stuk'], true)
                         ? (float) ($m['waterberging']['max_m3'] ?? 0)
                         : null,
                     'water_soort' => ($m['waterberging']['soort'] ?? null),
@@ -369,6 +369,30 @@ class MaatregelFilterService
             ];
         }
 
+        if ($soort === 'per_stuk') {
+            $eMin = (float) ($wb['min_m3'] ?? 0);
+            $eMax = (float) ($wb['max_m3'] ?? $eMin);
+            if ($eMin <= 0) {
+                return null;
+            }
+            $stuksBijHoogEffect = (int) ceil($volumeM3 / $eMax);
+            $stuksBijLaagEffect = (int) ceil($volumeM3 / $eMin);
+
+            return [
+                'soort' => 'per_stuk',
+                'volume_m3' => $volumeM3,
+                'stuks_bij_meeste_effect' => $stuksBijHoogEffect,
+                'stuks_bij_minste_effect' => $stuksBijLaagEffect,
+                'toelichting' => sprintf(
+                    'Benodigd aantal stuks (indicatief): ca. %d bij een hoog effect (%s m³/stuk) tot ca. %d bij een lager effect (%s m³/stuk).',
+                    $stuksBijHoogEffect,
+                    number_format($eMax, 2, ',', '.'),
+                    $stuksBijLaagEffect,
+                    number_format($eMin, 2, ',', '.'),
+                ),
+            ];
+        }
+
         return null;
     }
 
@@ -442,7 +466,7 @@ class MaatregelFilterService
      */
     private function matchesBeschikbaarDak(array $m, ?array $water, mixed $beschikbaarDak, array &$failures, array &$warnings): bool
     {
-        if (($m['id'] ?? '') !== 'groen-blauwe-daken') {
+        if (! in_array($m['id'] ?? '', ['groen-blauwe-daken', 'sedumdak'], true)) {
             return true;
         }
 

@@ -4,6 +4,12 @@ namespace App\Services;
 
 class MaatregelFilterService
 {
+    /** @var list<string> */
+    private const VOLUME_VERGELIJKING_SKIP = [
+        'waterdoorlatendheid-vegetatie',
+        'tegels-eruit-groen-erin',
+    ];
+
     /**
      * @param  array<string, mixed>  $input
      * @return array{rows: list<array<string, mixed>>, meta: array<string, mixed>}
@@ -163,7 +169,7 @@ class MaatregelFilterService
                 $passCount++;
                 if ($water !== null) {
                     $vergelijking = $this->volumeVergelijkingEntry($m, $water);
-                    if ($vergelijking !== null) {
+                    if ($vergelijking !== null && ! in_array((string) ($m['id'] ?? ''), self::VOLUME_VERGELIJKING_SKIP, true)) {
                         $volumeVergelijking[] = $vergelijking;
                     }
                 }
@@ -489,30 +495,11 @@ class MaatregelFilterService
         }
 
         if ($beschikbaarDak === null || $beschikbaarDak === '') {
-            if (isset($m['min_dakoppervlak_tip_m2'])) {
-                $warnings[] = 'Tip uit Bijlage E: retentiedak is nuttig vanaf circa '.$m['min_dakoppervlak_tip_m2'].' m² dakoppervlak.';
-            }
-
             return true;
         }
 
         $dak = (float) $beschikbaarDak;
         if ($dak <= 0) {
-            return true;
-        }
-
-        if ($water !== null && ($water['soort'] ?? null) === 'per_m2') {
-            $nodig = (float) ($water['m2_bij_minste_effect'] ?? 0);
-            if ($nodig > 0 && $dak + 1e-6 < $nodig) {
-                $failures[] = sprintf(
-                    'Beschikbaar dak (%s m²) is kleiner dan indicatief benodigd retentie-oppervlak (%s m²).',
-                    number_format($dak, 0, ',', '.'),
-                    number_format($nodig, 1, ',', '.'),
-                );
-
-                return false;
-            }
-
             return true;
         }
 
@@ -522,8 +509,15 @@ class MaatregelFilterService
             return false;
         }
 
-        if (isset($m['min_dakoppervlak_tip_m2']) && $dak < (float) $m['min_dakoppervlak_tip_m2']) {
-            $warnings[] = 'Tip uit Bijlage E: retentiedak is nuttig vanaf circa '.$m['min_dakoppervlak_tip_m2'].' m² dakoppervlak.';
+        if ($water !== null && ($water['soort'] ?? null) === 'per_m2') {
+            $nodig = (float) ($water['m2_bij_minste_effect'] ?? 0);
+            if ($nodig > 0 && $dak + 1e-6 < $nodig) {
+                $warnings[] = sprintf(
+                    'Beschikbaar dak (%s m²) is kleiner dan indicatief benodigd retentie-oppervlak (%s m²).',
+                    number_format($dak, 0, ',', '.'),
+                    number_format($nodig, 1, ',', '.'),
+                );
+            }
         }
 
         return true;

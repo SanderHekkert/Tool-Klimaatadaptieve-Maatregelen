@@ -34,7 +34,7 @@ Open `http://127.0.0.1:8000`.
 
 | URL | Beschrijving |
 |-----|----------------|
-| `/` | Home / catalogus |
+| `/` | Home / quickscan |
 | `/maatregelen/start` | Maatregelen kiezen |
 | `/maatregelen/tool` | Filtertool |
 | `/basisgids-klimaatadaptatie.pdf` | Basisgids (PDF) |

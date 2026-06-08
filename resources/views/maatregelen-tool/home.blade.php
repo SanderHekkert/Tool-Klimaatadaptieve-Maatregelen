@@ -1,6 +1,6 @@
 @extends('maatregelen-tool.layout')
 
-@section('title', 'Klimaatregelen catalogus')
+@section('title', 'Klimaatregelen quickscan')
 @section('hide_header', '1')
 @section('full_bleed', '1')
 
@@ -11,6 +11,16 @@
 @section('content')
     <section class="mt-home-fullscreen">
         <div class="mt-home-stage">
+            <div class="mt-home-brand">
+                <img
+                    src="{{ asset('images/van-wijnen-logo.svg') }}"
+                    alt="Van Wijnen"
+                    class="mt-home-brand__logo"
+                    width="180"
+                    height="38"
+                >
+            </div>
+
             <div class="mt-home-content-wrap">
                 <div class="mt-home-orbit" aria-hidden="true">
                     <span class="mt-home-orbit__ring"></span>
@@ -26,7 +36,7 @@
                 <div class="mt-home-content">
                     <h1 class="mt-home-logo">
                         <span class="mt-home-logo__top"><span class="mt-home-logo__climate">KLIMAAT</span>regelen</span>
-                    <span class="mt-home-logo__bottom">CATALOGUS</span>
+                    <span class="mt-home-logo__bottom">QUICKSCAN</span>
                     </h1>
 
                     <div class="mt-home-copy">

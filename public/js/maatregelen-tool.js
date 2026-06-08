@@ -133,7 +133,7 @@
               h(i.id) +
               '" data-plan-id="' +
               h(i.id) +
-              '" type="number" min="0" step="0.1" value="' +
+              '" type="number" min="0" step="1" value="' +
               h(qty || "") +
               '" placeholder="bijv. ' +
               (planner.invoer_eenheid === "m2" ? "25 m²" : "3 stuks") +
@@ -423,7 +423,7 @@
             return !i.pass;
         });
         failEl.innerHTML =
-            '<h3 class="mt-live-sub">Vallen weg <span class="mt-live-count mt-live-count--muted">' +
+            '<h3 class="mt-live-sub">Vallen af <span class="mt-live-count mt-live-count--muted">' +
             failed.length +
             "</span></h3>" +
             '<div class="mt-live-list mt-live-list--fail">' +

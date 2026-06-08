@@ -39,5 +39,26 @@ class MaatregelenPreviewTest extends TestCase
         $this->assertSame('m2', $sedum['eenheid']);
         $this->assertGreaterThan(0, $sedum['qty_max']);
         $this->assertGreaterThan(0, $sedum['kosten_max']);
+
+        $this->assertNull(collect($rows)->firstWhere('id', 'waterdoorlatendheid-vegetatie'));
+        $this->assertNull(collect($rows)->firstWhere('id', 'tegels-eruit-groen-erin'));
+    }
+
+    public function test_sedumdak_passes_when_available_roof_is_smaller_than_required_retention(): void
+    {
+        $response = $this->postJson(route('maatregelen.preview'), [
+            'niveau_gebouw' => '1',
+            'risicos' => ['wateroverlast'],
+            'verhard_m2' => '1000',
+            'bergingsnorm_mm' => '60',
+            'beschikbaar_dak_m2' => '100',
+        ]);
+
+        $response->assertOk();
+
+        $sedum = collect($response->json('items'))->firstWhere('id', 'sedumdak');
+        $this->assertNotNull($sedum);
+        $this->assertTrue($sedum['pass']);
+        $this->assertNotEmpty($sedum['warnings']);
     }
 }

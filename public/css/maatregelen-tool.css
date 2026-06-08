@@ -658,6 +658,20 @@ body.mt-body {
     z-index: 1;
 }
 
+.mt-home-brand {
+    position: absolute;
+    top: clamp(0.5rem, 1.5vh, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.mt-home-brand__logo {
+    display: block;
+    height: clamp(1.65rem, 3.8vw, 2.35rem);
+    width: auto;
+}
+
 .mt-home-content-wrap {
     position: relative;
     width: min(700px, calc(100vw - 2rem));

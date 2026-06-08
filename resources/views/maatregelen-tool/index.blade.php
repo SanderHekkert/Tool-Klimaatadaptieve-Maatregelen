@@ -16,7 +16,7 @@
         <div class="mt-split__col mt-split__col--form">
             <h1 class="mt-page-title">Overzicht klimaatadaptieve maatregelen</h1>
             <p class="mt-lead">
-                Links vul je de parameters in zoals in <strong>Bijlage E</strong>. Rechts zie je direct welke maatregelen <strong>voldoen</strong> en welke <strong>wegvallen</strong>, inclusief korte redenen.
+                Links vul je de projectspecifieke gegevens in; rechts zie je direct welke maatregelen <strong>voldoen</strong> en welke <strong>afvallen</strong>.
             </p>
 
             <form
@@ -139,5 +139,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/maatregelen-tool.js') }}?v=9" defer></script>
+    <script src="{{ asset('js/maatregelen-tool.js') }}?v=10" defer></script>
 @endpush

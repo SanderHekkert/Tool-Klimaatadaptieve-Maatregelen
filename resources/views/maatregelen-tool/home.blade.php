@@ -25,8 +25,10 @@
 
                 <div class="mt-home-content">
                     <h1 class="mt-home-logo">
-                        <span class="mt-home-logo__top"><span class="mt-home-logo__climate">KLIMAAT</span>regelen</span>
-                    <span class="mt-home-logo__bottom">QUICKSCAN</span>
+                        <span class="mt-home-logo__top">
+                            <span class="mt-home-logo__climate">KLI</span><span class="mt-home-logo__maatregelen">MAATregelen</span>
+                        </span>
+                        <span class="mt-home-logo__bottom">QUICKSCAN</span>
                     </h1>
 
                     <div class="mt-home-copy">

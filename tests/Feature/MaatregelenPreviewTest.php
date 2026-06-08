@@ -42,6 +42,7 @@ class MaatregelenPreviewTest extends TestCase
 
         $this->assertNull(collect($rows)->firstWhere('id', 'waterdoorlatendheid-vegetatie'));
         $this->assertNull(collect($rows)->firstWhere('id', 'tegels-eruit-groen-erin'));
+        $this->assertNull(collect($rows)->firstWhere('id', 'vegetatie-lokaal-klimaat'));
     }
 
     public function test_sedumdak_passes_when_available_roof_is_smaller_than_required_retention(): void

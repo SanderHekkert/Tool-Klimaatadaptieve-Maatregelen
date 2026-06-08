@@ -8,6 +8,7 @@ class MaatregelFilterService
     private const VOLUME_VERGELIJKING_SKIP = [
         'waterdoorlatendheid-vegetatie',
         'tegels-eruit-groen-erin',
+        'vegetatie-lokaal-klimaat',
     ];
 
     /**
@@ -513,7 +514,7 @@ class MaatregelFilterService
             $nodig = (float) ($water['m2_bij_minste_effect'] ?? 0);
             if ($nodig > 0 && $dak + 1e-6 < $nodig) {
                 $warnings[] = sprintf(
-                    'Beschikbaar dak (%s m²) is kleiner dan indicatief benodigd retentie-oppervlak (%s m²).',
+                    'Deze melding is alleen van toepassing wanneer je met uitsluitend deze maatregel aan de waterbergingsnorm wilt voldoen. In dat geval is het beschikbare dakoppervlak (%s m²) kleiner dan het indicatief benodigde retentie-oppervlak (%s m²).',
                     number_format($dak, 0, ',', '.'),
                     number_format($nodig, 1, ',', '.'),
                 );

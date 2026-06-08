@@ -122,7 +122,7 @@ return [
             'investering_tekst' => '€100 / m²',
             'onderhoud_jaar' => '€2 / 1–3× per jaar / €/m²/jaar',
             'effect_tekst' => '0,07–0,15 m³ waterberging per m²',
-            'technisch' => 'Geen harde minimale eis; nuttig vanaf circa 100 m² dakoppervlak',
+            'technisch' => 'Geen harde minimale eis',
             'waterberging' => ['soort' => 'per_m2', 'min_m3' => 0.07, 'max_m3' => 0.15],
         ],
         [
@@ -291,7 +291,7 @@ return [
             'investering_eenheid' => 'stuk',
             'investering_min' => null,
             'investering_max' => null,
-            'investering_tekst' => '-',
+            'investering_tekst' => 'Geen expliciete meerkosten',
             'onderhoud_jaar' => 'Geen onderhoudskosten; geen onderhoud',
             'effect_tekst' => '2-5 keer verlenging thermisch comfort',
             'technisch' => '-',

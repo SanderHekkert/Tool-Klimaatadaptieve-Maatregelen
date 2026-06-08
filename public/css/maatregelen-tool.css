@@ -814,6 +814,13 @@ body.mt-body {
     letter-spacing: 0.008em;
 }
 
+.mt-home-logo__maatregelen {
+    display: inline-block;
+    font-style: italic;
+    transform: skewX(-10deg);
+    font-weight: 600;
+}
+
 .mt-home-logo__bottom {
     display: block;
     margin-top: -0.08rem;

@@ -11,16 +11,6 @@
 @section('content')
     <section class="mt-home-fullscreen">
         <div class="mt-home-stage">
-            <div class="mt-home-brand">
-                <img
-                    src="{{ asset('images/van-wijnen-logo.svg') }}"
-                    alt="Van Wijnen"
-                    class="mt-home-brand__logo"
-                    width="180"
-                    height="38"
-                >
-            </div>
-
             <div class="mt-home-content-wrap">
                 <div class="mt-home-orbit" aria-hidden="true">
                     <span class="mt-home-orbit__ring"></span>

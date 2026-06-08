@@ -4,6 +4,16 @@
 @section('hide_header', '1')
 
 @section('content')
+    <div class="mt-tool-brand">
+        <img
+            src="{{ asset('images/van-wijnen-logo.svg') }}"
+            alt="Van Wijnen"
+            class="mt-tool-brand__logo"
+            width="180"
+            height="38"
+        >
+    </div>
+
     <div class="mt-gids-intro-wrap">
         <p class="mt-gids-intro">
             Deze tool bevat een selectie van maatregelen; voor een volledige toelichting op deze maatregelen en een uitgebreid overzicht van alle klimaatadaptieve maatregelen, zie de

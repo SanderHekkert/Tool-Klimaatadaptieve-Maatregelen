@@ -62,4 +62,21 @@ class MaatregelenPreviewTest extends TestCase
         $this->assertTrue($sedum['pass']);
         $this->assertNotEmpty($sedum['warnings']);
     }
+
+    public function test_waterbergende_verharding_passes_from_one_square_meter_available_area(): void
+    {
+        $response = $this->postJson(route('maatregelen.preview'), [
+            'niveau_gebied' => '1',
+            'risicos' => ['wateroverlast'],
+            'verhard_m2' => '200',
+            'bergingsnorm_mm' => '60',
+            'beschikbaar_gebied_m2' => '10',
+        ]);
+
+        $response->assertOk();
+
+        $verharding = collect($response->json('items'))->firstWhere('id', 'waterbergende-verharding');
+        $this->assertNotNull($verharding);
+        $this->assertTrue($verharding['pass']);
+    }
 }

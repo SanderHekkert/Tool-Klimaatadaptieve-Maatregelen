@@ -210,6 +210,7 @@ return [
             'effect_tekst' => '0,03–0,09 m³ waterberging per m²',
             'technisch' => 'Lage parkeerdruk; weinig zware belasting; rekening houden met grondwaterstand en bodemdoorlatendheid',
             'waterberging' => ['soort' => 'per_m2', 'min_m3' => 0.03, 'max_m3' => 0.09],
+            'gebied_oppervlak_min_m2' => 1,
         ],
         [
             'id' => 'waterzuinige-kranen',

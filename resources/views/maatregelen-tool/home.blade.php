@@ -34,7 +34,7 @@
                     <div class="mt-home-copy">
                         <p class="mt-home-copy__intro">He klimaattopper!</p>
                         <p>
-                            Deze tool ondersteunt het selecteren van klimaatadaptieve maatregelen bij binnenstedelijke nieuwbouwprojecten en projectontwikkelingen.
+                            Deze tool ondersteund het selecteren van klimaatadaptieve maatregelen bij binnenstedelijke nieuwbouwprojecten en projectontwikkelingen.
                             Door projectspecifieke gegevens in te vullen, laat de tool zien welke maatregelen toepasbaar zijn en hoeveel hiervan nodig is om aan de
                             gestelde eisen te voldoen. De uitkomst hiervan vormt een praktische basis en richtlijn binnen het selectieproces.
                         </p>
